@@ -1,0 +1,11 @@
+{
+    "name" : "ssa/core",
+    "version": "1.0.0",
+    "require": {
+        "doctrine/annotations": "*",
+        "doctrine/cache": "*"
+    },
+    "autoload" : {
+        "psr-4" : {"ssa\\" : ["src/ssa/", "test/ssa"]}
+    }
+}
