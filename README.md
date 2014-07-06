@@ -3,24 +3,24 @@ SSA
 
 SSA is a framework that allows to simply perform Ajax call. You can call your service as PHP.
 
-Download
+Installation
 ---
 
 Il you want use SSA you have many solution.
 
-### Symphony
+### Download with symphony
 
 An other project allow to simply add this project into your symphony project. see ssa/symphony.
 
-### Or standalone
+### Download the standalone version
 
 The standalone version is enable. 
 
-#### Composer
+#### Download with Composer
 
 The first solution is to use a project with composer, you can just add ssa/core dependencies.
 
-#### Or without composer
+#### Download without composer
 
 If you don't want use composer, you can add ssa into you project.
 
@@ -38,9 +38,9 @@ If you don't want use composer, you can add ssa into you project.
 + Install doctrine/annotations and doctrine/cache
 + You are ready to use SSA
 
-#### Controller creation
+### Controller creation
 
-For use SSA you need to use two php file, one to create javascript service, one to run the php controller.
+For use the standalone version of SSA you need to use two php file, one to create javascript service, one to run the php controller.
 this two php files, need to use configuration php file for register your services.
 
 *configuration.php*
