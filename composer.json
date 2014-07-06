@@ -1,6 +1,6 @@
 {
     "name" : "ssa/core",
-    "description" : "A php package for simply call php serice into Javascript code.",
+    "description" : "A php package for simply call php service into Javascript code.",
     "require": {
         "doctrine/annotations": "*",
         "doctrine/cache": "*"
