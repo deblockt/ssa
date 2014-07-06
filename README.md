@@ -3,6 +3,157 @@ SSA
 
 SSA is a framework that allows to simply perform Ajax call. You can call your service as PHP.
 
+Usage
+---
+
+### Working
+
+TODO
+
+### Example
+
+The usage of ssa is very simple, you create your PHP service, and you can call this service in javascript code.
+For example : 
+*HelloWorld.php*
+```php
+namespace services\;
+
+/**
+ * simple example service
+ *
+ * @author deblock
+ */
+class HelloWorld {
+    
+    /**
+     * return Hello <yourName> !!
+     * @param string $yourName
+     * @return string 
+     */
+    public function helloYou($yourName) {
+        return 'Hello ' . $yourName.' !!';
+    }
+}
+```
+
+*example.html*
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <!-- include ssa core javascript -->
+        <script type="text/javascript" src="javascript/ssa.js" ></script>
+        <!-- include the autogenerate javascript service -->
+        <script type="text/javascript" src="javascript.php?service=HelloWorld"></script>
+        <script type="text/javascript">
+            HelloWorld.helloYou('deblockt').done(function(result){
+                document.getElementById('serviceResult').innerHTML = result;
+            });
+        </script>
+    </head>
+    <body>
+        <div> SSA exemple </div>
+        <div id="serviceResult"></div>
+    </body>
+</html>
+```
+This exemple add "Hello deblock !!" into the serviceResult div.
+
+### Support
+
+Ssa support multiple type parameter, and return value.
+Parameters and return value can be, primitive type, object or DateTime, you can simply add an other type support.
+
+### Configuration 
+
+The ssa configuration is different between standalone version, and the symphony version.
+For symphony version you can look the repo ssa/symphony.
+The documentation of the Standalone version is under.
+
+#### Register you service
+
+The simple way for register your service is to create a *configuration.php* files. this file call the serviceManager for register your own services.
+
+*configuration.php*
+```php
+include 'autoload.php';
+
+use ssa\ServiceManager;
+
+// the first way to do this is with registerAllServices method 
+ServiceManager::getInstance()->registerAllServices(array(
+    // the first service is the class ssa\test\Service1 and we expose all this method 
+    'service1' => array(
+      'class' => 'ssa\test\Service1'
+    ),
+    // the second service is the class ssa\test\Service2 and we expose only the action1 and action2 method 
+    'service2' => array(
+      'class' => 'ssa\test\Service2',
+      'supportMethod' => array('action1','action2')
+    )
+));
+
+// the second way to do this is the registerService function, you can only register one service
+ServiceManager::getInstance()->registerService('service3','ssa\test\Service3');
+// or
+ServiceManager::getInstance()->registerService('service4','ssa\test\Service4', array('action1'));
+  
+```
+
+#### Configure SSA
+
+SSA can be configured, the configuration can be in the *configuration.php* file.
+
+*configuration.php*
+```php
+include 'autoload.php';
+
+use ssa\Configuration;
+
+Configuration::getInstance()->configure(array(
+    'debug' => true, // if debug is true the generated javascript file are not minimized
+    'cacheMode' => 'file', // if the cache is configured this cache mode is use, this can be file,apc,memcache,no(default)
+    'cacheDirectory' => '', // if the cacheMode is file, this parameter is mandatory, this is the directory where the cache is put
+    'memcacheHost' => '', // if the cacheMode is memcache is set this parameter is mandatory
+    'memcachePort' => ''// if the cacheMode is memcache is set this parameter is mandatory
+));
+
+// the configuration can be do like this, example
+Configuration::getInstance()->setDebug(true);
+Configuration::getInstance()->setCacheMode('file');
+
+/** service register **/
+```
+
+#### Add type support
+
+TODO 
+
+#### Create a converter
+
+The converter is use for converter your function return into javascipt value.
+The default converter is the JsonConverter, this converter can convert primitive type, array, and object. Objects are convert with getter methods, each getter is convert into a JSON property.
+If you need you can create your own converter, you can do this, it's simple. On your service action you need to add @Converter annotation.
+*Service.php*
+```php
+class Service {
+  /**
+   * @Converter(\MyJsonConverter)
+   *
+   * @param string $firstParameter
+   *
+   * @return string
+   */
+  public function action($firstParameter) {
+    return $firstParameter;
+  }
+}
+```
+The action method use MyJsonConverter for convert the return on JSON.
+You serializer must implements JsonSerializable, or extends DefaultJsonSerializer.
+
+
 Installation
 ---
 
