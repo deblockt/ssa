@@ -150,8 +150,38 @@ Configuration::getInstance()->setCacheMode('file');
 
 #### Add type support
 
-TODO 
+If default type support of ssa is not suffisant, you can define your own type support.
+You have two way to do this, add simple a type support (for object, or for parameter), or create a new ParameterResolver who resolve primitive and object.
+A default ParameterResolver exists, it can resolve primitiveType, array, object, and \DataTime. 
 
+The first method to add a type resolver is add directly into the default type resolver.
+_configuration.php_
+```php
+/** register services, and configure ssa */
+
+use ssa\runner\resolver\impl\DefaultParameterResolver;
+$defaultParameter = DefaultParameterResolver::createDefaultParameterResolver();
+$defaultParameter->addObjectResolver(new MyObjectResolver());
+$defaultParameter->addPrimitiveResolver(new MyPrimitiveResolver());
+
+```
+Your own ObjectResolver and your ParameterResolver need impements ssa\runner\resolver\ObjectResolver, ssa\runner\resolver\PrimitiveResolver. see documentation of PrimitiveResolver and ObjectResolver.
+
+Or you can create your own ParameterResolver (not recommended). your ParameterResolver need implement ssa\runner\resolver\ParameterResolver.
+
+*run.php*
+```php
+include 'configuration.php';
+
+use ssa\runner\ServiceRunner;
+// get the service and the action : HelloWorld.sayHello
+list($service, $action) = explode('.', $_GET['service']);
+
+// create the service runner
+$serviceRunner = new ServiceRunner($service, new MyParameterResolver());
+// run the action with get parameters
+echo $serviceRunner->runAction($action, $_GET);
+```
 #### Create a converter
 
 The converter is use for convert your function return into javascipt value.
