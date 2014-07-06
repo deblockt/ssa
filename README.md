@@ -27,7 +27,7 @@ If you don't want use composer, you can add ssa into you project.
 + Downlaod the project
 + Add the project into your own project
 + Update your autoloader for autoload the ssa classes.
-```
+```php
   function __autoload($className)  {
     if (strpos($className, 'ssa\') == 0) {
       $file = str_replace('\\', DIRECTORY_SEPARATOR, $className) . '.php';
@@ -44,7 +44,7 @@ For use the standalone version of SSA you need to use two php file, one to creat
 this two php files, need to use configuration php file for register your services.
 
 *configuration.php*
-```
+```php
 include 'autoload.php';
 
 use ssa\ServiceManager;
@@ -61,7 +61,7 @@ ServiceManager::getInstance()->registerAllServices(array(
 
 ```
 *run.php*
-```
+```php
 include 'configuration.php';
 
 use ssa\runner\ServiceRunner;
@@ -75,7 +75,7 @@ echo $serviceRunner->runAction($action, $_GET);
 ```
 
 *javascript.php*
-```
+```php
 include 'configuration.php';
 
 use ssa\converter\JavascriptConverter;
