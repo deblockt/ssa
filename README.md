@@ -8,11 +8,11 @@ Installation
 
 Il you want use SSA you have many solution.
 
-### Download with symphony
+### Use with symphony
 
 An other project allow to simply add this project into your symphony project. see ssa/symphony.
 
-### Download the standalone version
+### Use the standalone version
 
 The standalone version is enable. 
 
