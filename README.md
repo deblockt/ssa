@@ -6,10 +6,6 @@ SSA is a framework that allows to simply perform Ajax call. You can call your se
 Usage
 ---
 
-### Working
-
-TODO
-
 ### Example
 
 The usage of ssa is very simple, you create your PHP service, and you can call this service in javascript code.
@@ -59,6 +55,32 @@ class HelloWorld {
 </html>
 ```
 This exemple add "Hello deblock !!" into the serviceResult div.
+
+### Working
+
+For convert the service into Javascript service ssa use doc comment. It's use the @param annotation for know parameters and type parameters. If a php parameter have no comment, they will not be export into javascrit service.
+
+For run the service, the @param annotation are already use, the type is use for convert $_GET parameter into PHP type.
+Type support can be primitive, complete class name (with namespace), \DateTime(inputFormat) or array.
+\DateTime and array are specific.
+\DateTime type have parameter input format. Example \DateTime(m/d/Y)
+array can have parameter. Example array(int) array(int) array(\Path\To\My\Class) and parameters are converted.
+
+Javascript service have multiple method for handle ajax event.
+* *fail* : If a network error occurs
+* *always* : Already run after ajax call
+* *phpError* : Run if a php error occurs. (if the ssa mode is debug, the php error are logged)
+* *done* : Run when the service call is a success. 
+
+_serviceTest.js_
+```javascript
+myService.myAction('firstParameter', {attr1 : 'value1'})
+         .done(function(returnValue, xhr) { alert(returnValue);})
+         .fail(function(xhr) {alter('a network error occurs');})
+         .phpError(function(errorPhp, xhr) {alter('an error occurs'.errorPhp.message);})
+         .always(function(xhr){console.log('fin de la requête')}); 
+```
+each callback have the same object context, you can pass variable between this callbacks.
 
 ### Support
 
