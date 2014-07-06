@@ -154,7 +154,7 @@ TODO
 
 #### Create a converter
 
-The converter is use for converter your function return into javascipt value.
+The converter is use for convert your function return into javascipt value.
 The default converter is the JsonConverter, this converter can convert primitive type, array, and object. Objects are convert with getter methods, each getter is convert into a JSON property.
 If you need you can create your own converter, you can do this, it's simple. On your service action you need to add @Converter annotation.
 *Service.php*
