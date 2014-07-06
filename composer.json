@@ -1,5 +1,6 @@
 {
     "name" : "ssa/core",
+    "description" : "A php package for simply call php serice into Javascript code.",
     "require": {
         "doctrine/annotations": "*",
         "doctrine/cache": "*"

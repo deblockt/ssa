@@ -117,9 +117,9 @@ class Configuration {
             } else if ($cacheMode == 'apc') {
                 $this->cacheProvider = new ApcCache();
             } else if ($cacheMode == 'memcache') {
-                $memcache = new Memcache();
+                $memcache = new \Memcache();
                 $memcache->connect($this->getMemcacheHost(), $this->getMemcachePort());
-                $cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
+                $cacheDriver = new MemcacheCache();
                 $cacheDriver->setMemcache($memcache);
                 $this->cacheProvider = $cacheDriver;
             } else {
