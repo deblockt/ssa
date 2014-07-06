@@ -38,7 +38,7 @@ If you don't want use composer, you can add ssa into you project.
 + Install doctrine/annotations and doctrine/cache
 + You are ready to use SSA
 
-### Controller creation
+#### Controller creation
 
 For use the standalone version of SSA you need to use two php file, one to create javascript service, one to run the php controller.
 this two php files, need to use configuration php file for register your services.
