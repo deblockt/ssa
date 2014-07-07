@@ -6,13 +6,44 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title> Page de test de ssa</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">
         <script type="text/javascript" src="../../../javascript/ssa.js" ></script>
         <script type="text/javascript" src="javascript.php?service=HelloWorld"></script>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript">
+            HelloWorld.helloYou('deblockt').done(function(data) {
+                document.getElementById('helloYou').innerHTML = data;
+            });
+                      
+            $().ready(function(){
+                $('input[name="your_name"]').blur(function(){
+                    HelloWorld.helloYou($(this).val()).done(function(data){
+                         document.getElementById('helloYou2').innerHTML = data;
+                    });
+                });
+            });
+        </script>
     </head>
     <body>
-        <div>TODO write content</div>
+        <div>Hello world return : <span id="helloYou"></span> </div>
+        <pre>
+            <code class="javascript">            
+                HelloWorld.helloYou('deblockt').done(function(data) {
+                    document.getElementById('helloYou').innerHTML = data;
+                });
+            </code>
+        </pre>
+        <div> Hello You <input name="your_name" placeholder="Your name"/> : <span id="helloYou2"></span></div>
+        <pre>
+            <code class="javascript">            
+                $('input[name="your_name"]').blur(function(){
+                    HelloWorld.helloYou($(this).val()).done(function(data){
+                         document.getElementById('helloYou2').innerHTML = data;
+                    });
+                });
+            </code>
+        </pre>
     </body>
 </html>

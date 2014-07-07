@@ -15,7 +15,7 @@ var ssa = {
             'url' : url,
             'data' : data,
             'synchronous' : synchronius,
-			'method' : 'post',
+            'method' : 'post',
         });
         
     },
@@ -27,6 +27,21 @@ var ssa = {
         ops.json = true;
         ops.synchronous = false;
         
+        var extractGetParameters = function (url) {
+            var query_string = {};
+            var indexOf = url.indexOf('?');
+            var baseUrl = url.substring(0, indexOf);
+            var query = url.substring(indexOf + 1);
+            
+            var vars = query.split("&");
+            for (var i=0; i<vars.length; i++) {
+               var pair = vars[i].split("=");
+               query_string[pair[0]] = pair[1];
+            } 
+            
+            return {'baseUrl' : baseUrl, 'parameters' : query_string};
+        };
+        
         var getParams = function(data, url) {
             var str = ssa.param(data);
             
@@ -36,6 +51,12 @@ var ssa = {
             return '';
         };
         
+        // extract existing parameters into url
+        var otherData = extractGetParameters(ops.url);
+        ops.url = otherData.baseUrl;
+        for (var index in otherData.parameters) {
+            ops.data[index] = otherData.parameters[index];
+        }
         
         var api = {
             host: {},
