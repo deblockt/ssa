@@ -11,11 +11,11 @@ var ssa = {
            synchronius = false;
        }
        
-        // cas d'un appelle synchrone
         return this.ajaxRequest({
             'url' : url,
             'data' : data,
-            'synchronous' : synchronius
+            'synchronous' : synchronius,
+			'method' : 'post',
         });
         
     },

@@ -7,4 +7,4 @@ use ssa\runner\ServiceRunner;
 list($service, $action) = explode('.', $_GET['service']);
 
 $serviceRunner = new ServiceRunner($service);
-echo $serviceRunner->runAction($action, $_GET);
+echo $serviceRunner->runAction($action, $_POST);
