@@ -81,7 +81,7 @@ class ServiceManager {
      */
     public function getService($symbolicName) {
         if (!isset($this->services[$symbolicName])) {
-            throw new \ssa\ServiceNotRegistredException();
+            throw new \ssa\ServiceNotRegistredException($symbolicName);
         }
         return $this->services[$symbolicName];
     }

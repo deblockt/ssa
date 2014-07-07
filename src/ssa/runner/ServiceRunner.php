@@ -135,12 +135,6 @@ class ServiceRunner {
      *
      */
     public function runAction($method, $inputParameters = array()) {
-     /*   @throws ActionNotSupportedException
-     * @throws \ssa\runner\resolver\TypeNotSupportedException
-     * @throws MissingParameterException
-     * @throws ClassNotFoundException
-      * 
-      */
         try {
             return $this->runActionWithoutTryCatch($method, $inputParameters);
         } catch (\Exception $ex) {

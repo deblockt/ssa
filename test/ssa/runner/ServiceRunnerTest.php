@@ -151,24 +151,19 @@ class ServiceRunnerTest extends \PHPUnit_Framework_TestCase{
         $this->assertEquals('testtest', $return2[1]);
     }
     
-    /**
-     * @expectedException ssa\runner\ActionNotSupportedException
-     */
+    
     public function testActionNotSupported() {
         $serviceRunner = new ServiceRunner('testServiceRunnerService1');
-        $serviceRunner->runAction('service2', array());
+        $returnJson = $serviceRunner->runAction('service2', array());
+        $return = json_decode($returnJson);
+        $this->assertEquals(3001, $return->errorCode);
     }
     
     public function testWithUnsuportedType() {
-        try {
-            $serviceRunner = new ServiceRunner('testServiceRunnerService3');
-            $serviceRunner->runAction('service3', array('param1' => 'value1'));
-        
-            $this->fail();
-        } catch (\ssa\runner\resolver\TypeNotSupportedException  $ex) {
-            $this->assertEquals('param1', $ex->getVarname());
-            $this->assertEquals('typeNotSupported', $ex->getType());
-        }
+        $serviceRunner = new ServiceRunner('testServiceRunnerService3');
+        $returnJson = $serviceRunner->runAction('service3', array('param1' => 'value1'));
+        $return = json_decode($returnJson);
+        $this->assertEquals(3101, $return->errorCode);
     }
 
     public function testCallWithFileCache() {
@@ -189,11 +184,10 @@ class ServiceRunnerTest extends \PHPUnit_Framework_TestCase{
         $this->assertEquals('CONST_TEST_VALUE', $return[1]);
     }
     
-    /**
-     * @expectedException ssa\runner\ClassNotFoundException
-     */
     public function testCallActionWithBadEncoder() {
         $serviceRunner = new ServiceRunner('testServiceRunnerService4');
-        $serviceRunner->runAction('service4', array('param1' => 'value1'));
+        $returnJson = $serviceRunner->runAction('service4', array('param1' => 'value1'));
+        $return = json_decode($returnJson);
+        $this->assertEquals(3200, $return->errorCode);
     }
 }
