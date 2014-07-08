@@ -18,7 +18,7 @@ class ServiceMetadataTest extends \PHPUnit_Framework_TestCase{
         );
         $this->assertEquals('testPhpUnit', $service->getServiceName());
         $this->assertEquals('PHPUnit_Framework_TestCase', $service->getClass()->getName());
-        $this->assertEquals(array(), $service->getSupportMethod());
+        $this->assertEquals(array(), $service->getMethods());
     }
     
     public function testContructWithReflectionClass() {
@@ -29,6 +29,6 @@ class ServiceMetadataTest extends \PHPUnit_Framework_TestCase{
         );
         $this->assertEquals('testPhpUnit', $service->getServiceName());
         $this->assertEquals('PHPUnit_Framework_TestCase', $service->getClass()->getName());
-        $this->assertEquals(array('assertTrue'), $service->getSupportMethod());
+        $this->assertEquals(array('assertTrue'), $service->getMethods());
     }
 }

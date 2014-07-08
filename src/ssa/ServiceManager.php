@@ -47,10 +47,10 @@ class ServiceManager {
      * register a service
      * @param sting $symbolicName the symbolique name
      * @param string $class the class name
-     * @param array $supportMethod list of supported method
+     * @param array $supportedMethod list of supported method
      */
-    public function registerService($symbolicName, $class, array $supportMethod = array()) {
-        $this->services[$symbolicName] = new ServiceMetadata($symbolicName, $class, $supportMethod);
+    public function registerService($symbolicName, $class, array $supportedMethod = array()) {
+        $this->services[$symbolicName] = new ServiceMetadata($symbolicName, $class, $supportedMethod);
     }
         
     /**
@@ -58,18 +58,18 @@ class ServiceManager {
      * @param array $services array(
      *  'serviceName' => array(
      *      'class' => 'namespace\className',
-     *      'supportMethod' => array('method1','method2','method3')
+     *      'methods' => array('method1','method2','method3')
      *  ),
      *  ...
      * )
-     * if no supportMethod is specified, all method are translated
+     * if no methods are specified, all method are translated
      */
     public function registerAllServices(array $services) {
         foreach ($services as $serviceName => $service) {
             $this->registerService(
                 $serviceName, 
                 $service['class'],
-                isset($service['supportMethod']) ? $service['supportMethod'] : array() 
+                isset($service['methods']) ? $service['methods'] : array() 
             );
         }
     }

@@ -32,7 +32,7 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
     }
     
     
-    public function testJavascriptConverterWithoutSupportMethod() {
+    public function testJavascriptConverterWithoutMethods() {
         $converter = new JavascriptConverter('testService', $this->urlFactory);
         $converter->setDebug(false);
         $javascript = $converter->convert();
@@ -49,7 +49,7 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
         
     }
     
-    public function testJavascriptConverterWithSupportMethod() {
+    public function testJavascriptConverterWithMethods() {
         $converter = new JavascriptConverter('testServiceAction2', $this->urlFactory);
         $converter->setDebug(false);
         $javascript = $converter->convert();
@@ -65,7 +65,7 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
         $this->assertTrue(strpos($javascript, $this->url) >= 0);
     }
     
-    public function testJavascriptConverterWithSupportMethodDebug() {
+    public function testJavascriptConverterWithMethodsDebug() {
         $converter = new JavascriptConverter('testServiceAction2', $this->urlFactory);
         $converter->setDebug(true);
         $javascript = $converter->convert();
@@ -81,7 +81,7 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
         $this->assertTrue(strpos($javascript, $this->url) >= 0);
     }
 
-    public function testJavascriptConverterWithoutSupportMethodDebug() {        
+    public function testJavascriptConverterWithoutMethodsDebug() {        
         $converter = new JavascriptConverter('testService', $this->urlFactory);
         $converter->setDebug(true);
         $javascript = $converter->convert();

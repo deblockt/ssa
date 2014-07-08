@@ -64,9 +64,9 @@ class ServiceRunner {
      * @throws ClassNotFoundException
      */
     private function runActionWithoutTryCatch($method, $inputParameters = array()) {
-        if (count($this->metadata->getSupportMethod()) > 0 
+        if (count($this->metadata->getMethods()) > 0 
             && 
-            !in_array($method, $this->metadata->getSupportMethod())
+            !in_array($method, $this->metadata->getMethods())
         ) {            
             throw new ActionNotSupportedException($method);
         }

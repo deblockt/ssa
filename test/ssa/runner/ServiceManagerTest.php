@@ -25,11 +25,11 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase{
         $this->serviceManager->registerAllServices(array(
            'service1' => array(
                 'class' => 'ssa\runner\ServiceManagerTest',
-                'supportMethod' => array('method1')
+                'methods' => array('method1')
            ),
            'service2' => array(
                 'class' => 'ssa\runner\ServiceMetadataTest',
-                'supportMethod' => array()
+                'methods' => array()
            ),
         ));
         
@@ -41,8 +41,8 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase{
             'ssa\runner\ServiceMetadataTest',
             $this->serviceManager->getService('service2')->getClass()->getName()
         );
-        $this->assertEquals(array(), $this->serviceManager->getService('service2')->getSupportMethod());
-        $this->assertEquals(array('method1'), $this->serviceManager->getService('service1')->getSupportMethod());
+        $this->assertEquals(array(), $this->serviceManager->getService('service2')->getMethods());
+        $this->assertEquals(array('method1'), $this->serviceManager->getService('service1')->getMethods());
         
     }
 

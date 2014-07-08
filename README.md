@@ -112,7 +112,7 @@ ServiceManager::getInstance()->registerAllServices(array(
     // the second service is the class ssa\test\Service2 and we expose only the action1 and action2 method 
     'service2' => array(
       'class' => 'ssa\test\Service2',
-      'supportMethod' => array('action1','action2')
+      'methods' => array('action1','action2')
     )
 ));
 

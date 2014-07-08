@@ -52,8 +52,8 @@ abstract class ServiceConverter {
         }
         
         $return = $this->convertClass($this->getServiceName());
-        if (count($this->metaData->getSupportMethod()) > 0) {
-            foreach ($this->metaData->getSupportMethod() as $methodName) {
+        if (count($this->metaData->getMethods()) > 0) {
+            foreach ($this->metaData->getMethods() as $methodName) {
                 $method = $this->metaData->getClass()->getMethod($methodName);
                 $return .= $this->createMethod($method);
             }

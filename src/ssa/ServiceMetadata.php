@@ -18,7 +18,7 @@ class ServiceMetadata {
      * all method to convert
      * @var array 
      */
-    private $supportMethod;
+    private $supportedMethod;
     
     /**
      * the name of the service
@@ -30,15 +30,15 @@ class ServiceMetadata {
      * 
      * @param string $serviceName the symbolic name for the service
      * @param string|\ReflectionClass $className the class to convert
-     * @param array $supportMethod all method to convert
+     * @param array $supportedMethod all method to convert
      */
-    public function __construct($serviceName, $className, array $supportMethod = array()) {
+    public function __construct($serviceName, $className, array $supportedMethod = array()) {
         if (gettype($className) == 'string') {
             $this->class = new \ReflectionClass($className);
         } else {
             $this->class = $className;
         }
-        $this->supportMethod = $supportMethod;
+        $this->supportedMethod = $supportedMethod;
         $this->serviceName = $serviceName;
     }
     
@@ -54,8 +54,8 @@ class ServiceMetadata {
      * get list of supported method
      * @return array
      */
-    public function getSupportMethod() {
-        return $this->supportMethod;
+    public function getMethods() {
+        return $this->supportedMethod;
     }
     
     /**
