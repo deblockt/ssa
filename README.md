@@ -89,8 +89,8 @@ Parameters and return value can be, primitive type, object or DateTime, you can 
 
 ### Configuration 
 
-The ssa configuration is different between standalone version, and the symphony version.
-For symphony version you can look the repo ssa/symphony.
+The ssa configuration is different between standalone version, and the symfony version.
+For symfony version you can look the repo ssa/symfony.
 The documentation of the Standalone version is under.
 
 #### Register you service
@@ -211,9 +211,9 @@ Installation
 
 Il you want use SSA you have many solution.
 
-### Use with symphony
+### Use with symfony
 
-An other project allow to simply add this project into your symphony project. see ssa/symphony.
+An other project allow to simply add this project into your symfony project. see ssa/symfony.
 
 ### Use the standalone version
 
