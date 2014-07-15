@@ -33,7 +33,10 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
     
     
     public function testJavascriptConverterWithoutMethods() {
-        $converter = new JavascriptConverter('testService', $this->urlFactory);
+        $converter = new JavascriptConverter(
+            ServiceManager::getInstance()->getService('testServiceAction2'),
+            $this->urlFactory
+        );
         $converter->setDebug(false);
         $javascript = $converter->convert();
         

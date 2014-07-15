@@ -23,7 +23,7 @@ class ServiceRunner {
      *
      * @var ServiceMetadata
      */
-    private $metadata;
+    private $metaData;
     
     /**
      *
@@ -33,10 +33,16 @@ class ServiceRunner {
     
     /**
      * 
-     * @param ServiceMetadata $metadata service metadata
+     * @param string|ServiceMetadata $service service metadata
+     * @param ParameterResolver $parameterResolver the parameter resolver, 
+     *                          if null use the default parameter resolver
      */
-    public function __construct($serviceName, ParameterResolver $parameterResolver = null) {
-        $this->metadata = ServiceManager::getInstance()->getService($serviceName);
+    public function __construct($service, ParameterResolver $parameterResolver = null) {
+        if (gettype($service) == 'string') {
+            $this->metaData = ServiceManager::getInstance()->getService($service);
+        } else {
+            $this->metaData = $service;
+        }
         if ($parameterResolver == null) {
             $this->setParameterResolver(DefaultParameterResolver::createDefaultParameterResolver());
         } else {
@@ -64,14 +70,14 @@ class ServiceRunner {
      * @throws ClassNotFoundException
      */
     private function runActionWithoutTryCatch($method, $inputParameters = array()) {
-        if (count($this->metadata->getMethods()) > 0 
+        if (count($this->metaData->getMethods()) > 0 
             && 
-            !in_array($method, $this->metadata->getMethods())
+            !in_array($method, $this->metaData->getMethods())
         ) {            
             throw new ActionNotSupportedException($method);
         }
         
-        $method = $this->metadata->getClass()->getMethod($method);
+        $method = $this->metaData->getClass()->getMethod($method);
         // lecture de l'annotation de la méthode
         
         AnnotationRegistry::registerAutoloadNamespace(
@@ -111,7 +117,7 @@ class ServiceRunner {
             }
             $parametersValue[] = $currentValue;
         }
-        $service = $this->metadata->getClass()->newInstanceArgs();
+        $service = $this->metaData->getClass()->newInstanceArgs();
         $result = $method->invokeArgs($service, $parametersValue);
         
         $annotationReader = $this->getAnnotationReader();        

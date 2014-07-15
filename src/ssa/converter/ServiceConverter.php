@@ -27,10 +27,16 @@ abstract class ServiceConverter {
     
     /**
      * 
-     * @param string $metaData the service metadata
+     * @param string|ssa\ServiceMetadata $service the service metadata
+     * @param UrlFactory $urlFactory the url factory
+     * 
      */
-    public function __construct($serviceName, UrlFactory $urlFactory) {
-        $this->metaData = ServiceManager::getInstance()->getService($serviceName);
+    public function __construct($service, UrlFactory $urlFactory) {
+        if (gettype($service) == 'string') {
+            $this->metaData = ServiceManager::getInstance()->getService($service);
+        } else {
+            $this->metaData = $service;
+        }
         $this->urlFactory = $urlFactory;
     }
     

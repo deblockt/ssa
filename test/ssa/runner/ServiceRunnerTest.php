@@ -167,7 +167,7 @@ class ServiceRunnerTest extends \PHPUnit_Framework_TestCase{
     }
 
     public function testCallWithFileCache() {
-        $serviceRunner = new ServiceRunner('testServiceRunnerService2');
+        $serviceRunner = new ServiceRunner(ServiceManager::getInstance()->getService('testServiceRunnerService2'));
         Configuration::getInstance()->configure(array(
             'cacheMode' => 'file',
             'cacheDirectory' => __DIR__.'/cache',
