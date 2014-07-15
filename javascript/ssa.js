@@ -30,6 +30,10 @@ var ssa = {
         var extractGetParameters = function (url) {
             var query_string = {};
             var indexOf = url.indexOf('?');
+            if (indexOf == -1) {
+                // no get parameters
+                return {'baseUrl' : url, 'parameters' : []};
+            }
             var baseUrl = url.substring(0, indexOf);
             var query = url.substring(indexOf + 1);
             
