@@ -32,7 +32,7 @@ class DefaultJsonSerializer implements \JsonSerializable {
             $return = array();
             $reflectionClass = new \ReflectionClass($data);
             foreach ($reflectionClass->getMethods() as $method) {
-                if(stripos($method->getName(), "get")!==FALSE){
+                if(stripos($method->getName(), "get")!==FALSE && count($method->getParameters()) == 0){
                      $property = lcfirst(mb_substr($method->getName(), 3,mb_strlen($method->getName(),'UTF-8'),'UTF-8'));
                      $return[$property] = $this->serialize($method->invoke($data));
                 }
