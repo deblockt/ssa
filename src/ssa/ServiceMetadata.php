@@ -66,5 +66,13 @@ class ServiceMetadata {
         return $this->serviceName;
     }
 
+    /**
+     * return a new instance for service class
+     * 
+     * @return mixed an object of the service class
+     */
+    public function getInstance() {
+        return $this->getClass()->newInstanceArgs();
+    }
 
 }

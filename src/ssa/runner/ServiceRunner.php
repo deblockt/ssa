@@ -117,7 +117,7 @@ class ServiceRunner {
             }
             $parametersValue[] = $currentValue;
         }
-        $service = $this->metaData->getClass()->newInstanceArgs();
+        $service = $this->metaData->getInstance();
         $result = $method->invokeArgs($service, $parametersValue);
         
         $annotationReader = $this->getAnnotationReader();        
