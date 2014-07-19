@@ -28,7 +28,7 @@ class DefaultObjectResolver extends ObjectResolverCOR {
             throw new BadTypeException('', 'object', gettype($parameters));
         }
         
-        $object = $class->newInstance();
+        $object = $this->instanciate($class, $parameters);
         foreach ($parameters as $paramName => $value) {
             $setter = $class->getMethod('set'.ucfirst($paramName));
             // test if the setter parameter is an object
@@ -57,4 +57,12 @@ class DefaultObjectResolver extends ObjectResolverCOR {
         return $object;
     }
 
+    /**
+     * function class for instancate the class
+     * @param \ReflectionClass $class the class name
+     * @param array $parameters the parameters
+     */
+    protected function instanciate(\ReflectionClass $class, $parameters) {
+        return $class->newInstance();
+    }
 }
