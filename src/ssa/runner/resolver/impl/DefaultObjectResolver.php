@@ -30,7 +30,12 @@ class DefaultObjectResolver extends ObjectResolverCOR {
         
         $object = $this->instanciate($class, $parameters);
         foreach ($parameters as $paramName => $value) {
-            $setter = $class->getMethod('set'.ucfirst($paramName));
+            try {
+                $setter = $class->getMethod('set'.ucfirst($paramName));
+            } catch (\Exception $ex) {
+                continue;
+            }
+            
             // test if the setter parameter is an object
             $parameters = $setter->getParameters();
             $classParameter = $parameters[0]->getClass();
