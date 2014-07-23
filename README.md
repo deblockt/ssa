@@ -1,4 +1,4 @@
-SSA
+SSA : Simple Service Access
 ===
 
 SSA is a framework that allows to simply perform Ajax call. You can call your service as PHP.
