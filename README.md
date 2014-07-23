@@ -90,7 +90,13 @@ Parameters and return value can be, primitive type, object or DateTime, you can 
 ### Configuration 
 
 The ssa configuration is different between standalone version, and the symfony version.
-For symfony version you can look the repo ssa/symfony.
+
+#### Symfony version
+
+For symfony version you can look this [bundle project](https://github.com/deblockt/ssaSymfony)
+
+#### Standalone
+
 The documentation of the Standalone version is under.
 
 #### Register you service
