@@ -171,6 +171,9 @@ var ssa = {
 	var prefix;
         var s = [];
         var add = function( key, value ) {
+                if (value === undefined) {
+                    return;
+                }
                 // If value is a function, invoke it and return its value
                 value = "function" === typeof value ? value() : ( value == null ? "" : value );
                 s[ s.length ] = encodeURIComponent( key ) + "=" + encodeURIComponent( value );
