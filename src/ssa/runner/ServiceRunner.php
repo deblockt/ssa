@@ -98,7 +98,10 @@ class ServiceRunner {
             try {
                 if (!$parameter->isDefaultValueAvailable() && !isset($inputParameters[$name])) {
                     throw new MissingParameterException($name);
-                } else if (isset($inputParameters[$name])){
+                } else if (isset($inputParameters[$name])){                    
+                    if (!isset($docParameters[$name]) || $docParameters[$name] == NULL) {
+                        $docParameters[$name] = array();
+                    }
                     if ($class != null) {
                         $currentValue = $this->parameterResolver->resolveObject($class, $inputParameters[$name], $docParameters[$name]);
                     } else if (isset($docParameters[$name])) {
