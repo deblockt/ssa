@@ -87,7 +87,21 @@ abstract class ServiceConverter {
     private function createMethod(\ReflectionMethod $method) {
         $comment = $method->getDocComment();
         $params = AnnotationUtil::getMethodParameters($comment);
-        return $this->convertMethod($method->getName(), $params, $comment);
+        // get params with reflexion methods
+        $parameters = $method->getParameters();
+        $realParameters = array();
+        foreach ($parameters as $parameter) {
+            // @var \ReflectionParameter $parameter
+            $paramName = $parameter->getName();
+            if (isset($params[$paramName])) {
+                $realParameters[$paramName] = $params[$paramName];
+            } else if ($parameter->getClass() != null) {
+                $realParameters[$paramName] = array($parameter->getClass()->getName());
+            } else {
+                $realParameters[$paramName] = array('undefined');
+            }
+        }
+        return $this->convertMethod($method->getName(), $realParameters, $comment);
     }
     
     /**

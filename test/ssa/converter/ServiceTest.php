@@ -10,9 +10,10 @@ namespace ssa\converter;
 class ServiceTest {
     
     /**
+     * action1 documentation
      * 
      * @param string $param1
-     * @param int $param2 second parameter
+     * @param array(array(int)) $param2 second parameter
      */
     public function action1($param1, $param2) {
         
@@ -20,9 +21,35 @@ class ServiceTest {
     
     /**
      * 
-     * @param string $param1
+     * @param string $param1 
+     * 
+     * @return string the string
      */
     public function action2($param1) {
         
+    }
+    
+    /**
+     * action 3 documentation
+     * 
+     * @param string $param1
+     */
+    public function action3(ServiceTest $service) {
+        
+    }
+    
+    /**
+     * documentation avec un return 
+     * 
+     * @return
+     */
+    public function action4() {
+        return ''; 
+    }
+    
+    /**
+     * documentation toute simple
+     */
+    public function action5() {
     }
 }

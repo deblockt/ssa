@@ -69,6 +69,7 @@ class ServiceRunnerTest extends \PHPUnit_Framework_TestCase{
         return $param1;
     }
     
+    
     public function setUp() {
         ServiceManager::getInstance()->registerService('testServiceRunner', 'ssa\runner\ServiceRunnerTest');
         ServiceManager::getInstance()->registerService(

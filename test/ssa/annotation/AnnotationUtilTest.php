@@ -37,6 +37,9 @@ class AnnotationUtilTest extends \PHPUnit_Framework_TestCase
         $returnObject = AnnotationUtil::splitParameter('\DateTime(d/m/Y)');
         $expectedObject = array('\DateTime', 'd/m/Y');
         $this->assertEquals($expectedObject, $returnObject);
+        $returnArray = AnnotationUtil::splitParameter('array(array(int))');
+        $expectedArray = array('array', 'array', 'int');
+        $this->assertEquals($expectedArray, $returnArray);
     }
     
     /**

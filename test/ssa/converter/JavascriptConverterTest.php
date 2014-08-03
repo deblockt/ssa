@@ -12,7 +12,7 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
     
     private $urlFactory;
     
-    private $url = 'http://test.com/action';
+    private $url = 'http://test.com/action/2';
     
     public function setUp() {
         $this->urlFactory = $this->getMock(
@@ -34,7 +34,7 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
     
     public function testJavascriptConverterWithoutMethods() {
         $converter = new JavascriptConverter(
-            ServiceManager::getInstance()->getService('testServiceAction2'),
+            ServiceManager::getInstance()->getService('testService'),
             $this->urlFactory
         );
         $converter->setDebug(false);
@@ -57,13 +57,22 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
         $converter->setDebug(false);
         $javascript = $converter->convert();
         
-        $this->assertTrue(
-            strpos($javascript, 'testService.action1 = function(param1, param2)') == 0,
+        $this->assertFalse(
+            strpos($javascript, 'testService.action1 = function(param1, param2)'),
             'la fonction action1 ne devrait pas être présente'
         ); 
         $this->assertTrue(
             strpos($javascript, 'testService.action2 = function(param1)') >= 0,
             'la fonction action2 n\'est pas présente'
+        ); 
+        $this->assertTrue(
+            strpos($javascript, 'testService.action3 = function(service)') >= 0,
+            'la fonction action3 n\'as pas les bons paramétres'
+        ); 
+        
+        $this->assertFalse(
+            strpos($javascript, 'testService.action3 = function(param1)'),
+            'la fonction action3 n\'as pas les bons paramétres'
         ); 
         $this->assertTrue(strpos($javascript, $this->url) >= 0);
     }

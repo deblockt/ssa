@@ -33,12 +33,14 @@ class AnnotationUtil {
      * @return type
      */
     public static function splitParameter($parameter) {
+        $parameter = trim($parameter);
         $typepos = strpos($parameter, '(');
         $endtypepos = strpos($parameter, ')', $typepos);
-        $return = array();
-        if ($typepos > 0 || $endtypepos > 0) {
+        $return = array();        
+        if ($typepos !== false || $endtypepos !== false) {
             $return[] = trim(\substr($parameter, 0, $typepos));
-            $return[] = trim(\substr($parameter, $typepos + 1, $endtypepos - $typepos - 1));
+            $otherParameters = AnnotationUtil::splitParameter(\substr($parameter, $typepos + 1, -1));
+            $return = array_merge($return, $otherParameters);
         } else {
             $return[] = trim($parameter);
         }
