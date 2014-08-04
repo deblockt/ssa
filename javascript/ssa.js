@@ -15,7 +15,7 @@ var ssa = {
             'url' : url,
             'data' : data,
             'synchronous' : synchronius,
-            'method' : 'post',
+            'method' : 'post'
         });
         
     },
