@@ -25,3 +25,5 @@ $RECYCLE.BIN/
 .coverage
 .tox
 
+# composer files
+composer.lock
