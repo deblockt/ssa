@@ -87,6 +87,55 @@ each callback have the same object context, you can pass variable between this c
 Ssa support multiple type parameter, and return value.
 Parameters and return value can be, primitive type, object or DateTime, you can simply add an other type support.
 
+Ssa support file uploaded, if you want upload a file you must use the file, or array(file) types.
+
+*service.php*
+```php
+class FileService {
+
+    /**
+     * @param file $file
+     */
+    public function upload($file) {
+        // file is like this
+        // array(
+        //  'name' => 'string',
+        //  'size' => int,
+        //  'error' => int,
+        //  'tmp_name' => 'string',
+        //  'type' => 'string'
+        // )
+    }
+    
+    /**
+     * @param array(file) $files
+     */
+    public function uploadMultiple($files) {
+        foreach ($files as $file) {
+            $this->upload($file);
+        }
+    }
+}
+```
+
+*FileUpload.js*
+```javascript
+// upload one file
+FileService.upload(document.getElementById('simpleFileUploadInput').files);
+// upload multiple file
+FileService.uploadMultipleFile(document.getElementById('multipleFileUploadInput').files);
+```
+
+Warning the file uploaded is not support by all navigator, it use FormData class.
+The method ssa.supportFileUpload return true if the navigator support this function.
+When you run a service with file upload the callback formDataError is call is this function is not supported.
+```javascript
+FileService.upload(document.getElementById('simpleFileUploadInput').files)
+           .formDataError(function(){
+                alert('Your navigator is too old for this function');
+           });
+```
+
 ### Configuration 
 
 The ssa configuration is different between standalone version, and the symfony version.
@@ -280,7 +329,7 @@ list($service, $action) = explode('.', $_GET['service']);
 // create the service runner
 $serviceRunner = new ServiceRunner($service);
 // run the action with get parameters
-echo $serviceRunner->runAction($action, $_GET);
+echo $serviceRunner->runAction($action, array_merge($_POST, $_FILES));
 ```
 
 *javascript.php*
