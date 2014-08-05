@@ -188,7 +188,7 @@ class JavascriptConverter extends ServiceConverter {
      * 
      * @param array $type
      */
-    public function mustUseFormData(array $type) {
+    public function mustUseFormData(array $types) {
         foreach ($types as $type) {
             if ($type == 'file') {
                 return true;
