@@ -7,7 +7,7 @@ use ssa\annotation\AnnotationUtil;
 use ssa\runner\resolver\ParameterResolver;
 use ssa\runner\resolver\TypeNotSupportedException;
 use ssa\runner\resolver\impl\DefaultParameterResolver;
-use ssa\runner\converter\DefaultJsonSerializer;
+use ssa\runner\converter\DefaultJsonEncoder;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use ssa\ServiceManager;
@@ -130,12 +130,12 @@ class ServiceRunner {
             if (!class_exists($methodAnnotations[0]->value)) {
                 throw new ClassNotFoundException($methodAnnotations[0]->value);
             }
-            $encoder = new $methodAnnotations[0]->value($result);
+            $encoder = new $methodAnnotations[0]->value();
         } else {
-            $encoder = new DefaultJsonSerializer($result);
+            $encoder = new DefaultJsonEncoder();
         }
         
-        return json_encode($encoder);
+        return $encoder->encode($result);
     }
     /**
      * run an action of the class

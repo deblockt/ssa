@@ -4,8 +4,15 @@
 var ssa = {
     rbracket : /\[\]$/,
     r20 : /%20/g,
-    call : function(url, parameter, synchronius) {
-        var data = parameter || {};
+    supportFileUpload : function(){
+        if ('undefined' !== typeof window.FormData) {
+            fd = new FormData;
+            return 'undefined' !== typeof fd.append;
+        }
+        return false;
+    },
+    call : function(url, parameter, synchronius, useFormData) {
+       var data = parameter || {};
        
        if (synchronius === undefined) {
            synchronius = false;
@@ -15,14 +22,15 @@ var ssa = {
             'url' : url,
             'data' : data,
             'synchronous' : synchronius,
-            'method' : 'post'
-        });
-        
+            'method' : 'post',
+            'useFormData' : useFormData
+        });  
     },
     ajaxRequest: function(ops) {
         if(typeof ops === 'string') ops = { url: ops };
         ops.url = ops.url || '';
         ops.method = ops.method || 'get';
+        ops.useFormData = ops.useFormData || false;
         ops.data = ops.data || {};
         ops.json = true;
         ops.synchronous = false;
@@ -47,6 +55,16 @@ var ssa = {
         };
         
         var getParams = function(data, url) {
+            if (ops.useFormData) {
+                var formData = new FormData();
+                var arrayParam = ssa.paramAsArray(data);
+                for (var i in arrayParam) {
+                    var param = arrayParam[i];    
+                    formData.append(param[0], param[1]);
+                }
+                return formData;
+            }
+            
             var str = ssa.param(data);
             
             if(str != '') {
@@ -83,14 +101,17 @@ var ssa = {
                         self.alwaysCallback && self.alwaysCallback.apply(self.host, [self.xhr]);
                     };
                 }
+                
                 if(ops.method === 'get') {
                     this.xhr.open("GET", ops.url + getParams(ops.data, ops.url), !ops.synchronous);
                 } else {
                     this.xhr.open(ops.method, ops.url, !ops.synchronous);
-                    this.setHeaders({
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Content-type': 'application/x-www-form-urlencoded'
-                    });
+                    if (!ops.useFormData) {
+                        this.setHeaders({
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-type': 'application/x-www-form-urlencoded'
+                        });
+                    }
                 }
                 if(ops.headers && typeof ops.headers === 'object') {
                     this.setHeaders(ops.headers);
@@ -148,8 +169,12 @@ var ssa = {
        
         return api.process(ops);
     },
-    buildParams : function( prefix, obj, add ) {
-        if (Array.isArray( obj ) ) {
+    buildParams : function( prefix, obj, add ) {        
+        if (obj instanceof FileList) {
+            for (var i = 0; i < obj.length; i++) { 
+               add( prefix+'[]', obj[i] );
+            }
+        } else if (Array.isArray( obj ) ) {
             for (var i in obj) {
                 var v = obj[i];
                 if (ssa.rbracket.test( prefix ) ) {
@@ -168,7 +193,18 @@ var ssa = {
         }
     },    
     param : function(a) {
-	var prefix;
+	var s = this.paramAsArray(a);
+        var sString = [];
+        for (var i in s) {
+            s[i][0] = encodeURIComponent(s[i][0]);
+            s[i][1] = encodeURIComponent(s[i][1]);
+            sString.push(s[i].join("="));
+        }
+	// Return the resulting serialization
+	return sString.join( "&" ).replace(ssa.r20, "+" );
+    },
+    paramAsArray : function(a) {
+        var prefix;
         var s = [];
         var add = function( key, value ) {
                 if (value === undefined) {
@@ -176,12 +212,16 @@ var ssa = {
                 }
                 // If value is a function, invoke it and return its value
                 value = "function" === typeof value ? value() : ( value == null ? "" : value );
-                s[ s.length ] = encodeURIComponent( key ) + "=" + encodeURIComponent( value );
+                s[ s.length ] = [ key , value];
             };
 
 
 	// If an array was passed in, assume that it is an array of form elements.
-	if (Array.isArray( a )) {
+	if (a instanceof FileList) {
+            for (var i = 0; i < files.length; i++) { 
+                add( i, a[i]);
+            }
+        } else if (Array.isArray( a )) {
             for (var i in a) {
                 add( i, a[i]);
             }
@@ -192,8 +232,7 @@ var ssa = {
             }
 	}
         
-	// Return the resulting serialization
-	return s.join( "&" ).replace(ssa.r20, "+" );
+        return s;
     }
 };
 

@@ -2,24 +2,43 @@
 
 namespace ssa\runner\converter;
 
+use ssa\runner\converter\Encoder;
 
 /**
  * Description of DefaultJsonSerialize
  *
  * @author thomas
  */
-class DefaultJsonSerializer implements \JsonSerializable {
+class DefaultJsonEncoder implements \JsonSerializable, Encoder {
     private $serializableData;
     
-    public function __construct($serializableData) {
-        $this->serializableData = $serializableData;
-    }
-    
+    /**
+     * method used by json_encode
+     * @return type
+     */
     public function jsonSerialize () {        
         return $this->serialize($this->serializableData);
     }
     
-    public function serialize($data) {
+
+    /**
+     * return json
+     * 
+     * @param mixed $data
+     * @return string
+     */
+    public function encode($data) {
+        $this->serializableData = $data;
+        return json_encode($this);
+    }
+
+    /**
+     * create an array who can be convert in json
+     * 
+     * @param \ssa\runner\converter\Traversable $data
+     * @return \ssa\runner\converter\Traversable
+     */
+    private function serialize($data) {
         $return = null;
         if(is_array($data) ||  $data instanceof Traversable ) {
             $return = array();

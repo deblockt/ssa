@@ -7,8 +7,8 @@ use ssa\Configuration;
 
 Configuration::getInstance()->configure(array(
     'debug' => true,
-    'cacheMode' => 'file',
-    'cacheDirectory' => __DIR__.'/cache'
+   // 'cacheMode' => 'file',
+   // 'cacheDirectory' => __DIR__.'/cache'
 ));
 ServiceManager::getInstance()->registerAllServices(array(
     'HelloWorld' => array('class' => 'ssa\toEndTest\HelloWorld')

@@ -7,4 +7,4 @@ use ssa\runner\ServiceRunner;
 list($service, $action) = explode('.', $_POST['service']);
 
 $serviceRunner = new ServiceRunner($service);
-echo $serviceRunner->runAction($action, $_POST);
+echo $serviceRunner->runAction($action, array_merge($_POST, $_FILES));

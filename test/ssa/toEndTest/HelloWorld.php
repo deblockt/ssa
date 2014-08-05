@@ -3,6 +3,7 @@
 namespace ssa\toEndTest;
 
 use ssa\runner\resolver\Pojo;
+use ssa\runner\converter\annotations\Converter;
 
 /**
  * Description of HelloWorld
@@ -18,6 +19,16 @@ class HelloWorld {
      */
     public function helloYou($yourName) {
         return 'Hello ' . $yourName.' !!';
+    }
+    
+    /**
+     * 
+     * 
+     * @param file $file1 the file
+     * @param file $file2 
+     */
+    public function getFileContent($file1, $file2) {
+        return $file1;
     }
     
     /**

@@ -45,5 +45,12 @@ and open the template in the editor.
                 });
             </code>
         </pre>
+        
+        <form action="http://localhost:8080/ssa/test/ssa/toEndTest/run.php" method="POST" enctype="multipart/form-data">
+            <input type="text" name="service" value="HelloWorld.getFileContent"/>
+            
+            <input type="file" multiple="multiple" id="fileUpload1" name="file[]"/>
+            <input type="file" multiple="multiple" id="fileUpload2" name="file[]"/>
+        </form>
     </body>
 </html>
