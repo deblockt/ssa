@@ -124,7 +124,7 @@ class ServiceRunner {
         $result = $method->invokeArgs($service, $parametersValue);
         
         $annotationReader = $this->getAnnotationReader();        
-        $methodAnnotations = $annotationReader->getMethodAnnotations($method, 'ssa\runner\converter\annotations\Converter');
+        $methodAnnotations = $annotationReader->getMethodAnnotations($method, 'ssa\runner\converter\annotations\Encoder');
         $encoder = null;
         if (count($methodAnnotations) > 0) {
             if (!class_exists($methodAnnotations[0]->value)) {

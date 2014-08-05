@@ -28,7 +28,7 @@ class HelloWorld {
      * @param file $file2 
      */
     public function getFileContent($file1, $file2) {
-        return $file1;
+        return array($file1, $file2);
     }
     
     /**

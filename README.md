@@ -188,16 +188,16 @@ $serviceRunner = new ServiceRunner($service, new MyParameterResolver());
 // run the action with get parameters
 echo $serviceRunner->runAction($action, $_GET);
 ```
-#### Create a converter
+#### Create an encoder
 
-The converter is use for convert your function return into javascipt value.
-The default converter is the JsonConverter, this converter can convert primitive type, array, and object. Objects are convert with getter methods, each getter is convert into a JSON property.
-If you need you can create your own converter, you can do this, it's simple. On your service action you need to add @Converter annotation.
+The encoder is use for encode your function return into javascipt value.
+The default encoder is the JsonEncoder, this encoder can convert primitive type, array, and object. Objects are convert with getter methods, each getter is convert into a JSON property.
+If you need you can create your own encoder, you can do this, it's simple. On your service action you need to add @Encoder annotation.
 *Service.php*
 ```php
 class Service {
   /**
-   * @Converter(\MyJsonConverter)
+   * @Encoder(\MyEncoder)
    *
    * @param string $firstParameter
    *
@@ -208,8 +208,8 @@ class Service {
   }
 }
 ```
-The action method use MyJsonConverter for convert the return on JSON.
-You serializer must implements JsonSerializable, or extends DefaultJsonSerializer.
+The action method use MyEncoder for convert the return on JSON or other format.
+Your encoder must implements ssa\runner\converter\Encoder, or extends ssa\runner\converter\DefaultJsonEncoder.
 
 
 Installation

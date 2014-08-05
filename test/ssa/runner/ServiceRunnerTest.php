@@ -6,7 +6,7 @@ use ssa\runner\ServiceRunner;
 use ssa\runner\resolver\Pojo;
 use ssa\ServiceMetadata;
 use ssa\runner\resolver\impl\DefaultParameterResolver;
-use ssa\runner\converter\annotations\Converter;
+use ssa\runner\converter\annotations\Encoder;
 use ssa\ServiceManager;
 use ssa\Configuration;
 use ssa\util\ParameterUtil;
@@ -40,7 +40,7 @@ class ServiceRunnerTest extends \PHPUnit_Framework_TestCase{
      * @param string $param1
      * @param string $param2
      * 
-     * @Converter("\ssa\runner\converter\DefaultJsonSerializer")
+     * @Encoder("\ssa\runner\converter\DefaultJsonEncoder")
      * 
      * @return array all parameter into an array
      */
@@ -61,7 +61,7 @@ class ServiceRunnerTest extends \PHPUnit_Framework_TestCase{
      * 
      * @param string $param1
      * 
-     * @Converter("\badClass")
+     * @Encoder("\badClass")
      * 
      * @return param
      */
@@ -143,6 +143,7 @@ class ServiceRunnerTest extends \PHPUnit_Framework_TestCase{
     public function testExecuteActionWithDefaultParameter() {
         $serviceRunner = new ServiceRunner('testServiceRunner');
         $returnJson = $serviceRunner->runAction('service2', array());
+        
         $return = json_decode($returnJson);        
         $this->assertEquals('test', $return[0]);
         $this->assertEquals('CONST_TEST_VALUE', $return[1]);
