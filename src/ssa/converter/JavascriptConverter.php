@@ -58,7 +58,7 @@ class JavascriptConverter extends ServiceConverter {
                 $paramAsJson .= ',';
                 $return .= ', ';
             }
-            if ($type[0] == 'file') {
+            if ($this->mustUseFormData($type)) {
                 $haveFileType = true;
             }
         } 
@@ -181,6 +181,21 @@ class JavascriptConverter extends ServiceConverter {
             );
         }
         return $return;
+    }
+    
+    /**
+     * function return true if this type must use form data
+     * 
+     * @param array $type
+     */
+    public function mustUseFormData(array $type) {
+        foreach ($types as $type) {
+            if ($type == 'file') {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     public function implodeParameterType($typeExploded) {
