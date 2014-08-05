@@ -131,6 +131,12 @@ var ssa = {
                 this.successCallback = callback;                
                 return this;
             },
+            formDataError : function(callback){
+                if (this.host.errorFormData) {
+                    callback();
+                }
+                return this;
+            },
             phpError : function(callback) {
                 this.phpErrorCallback = callback;
                 return this;
@@ -167,6 +173,12 @@ var ssa = {
             }
         };
        
+        // if it want use form data but the navigator doesn't support FormData
+        if (ops.useFormData && !ssa.supportFileUpload()) {
+            api.host.errorFormData = true;
+            return api;
+        }
+        
         return api.process(ops);
     },
     buildParams : function( prefix, obj, add ) {        
