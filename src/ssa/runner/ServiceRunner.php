@@ -137,8 +137,10 @@ class ServiceRunner {
         
         $encodedResult = $encoder->encode($result);
         $headers = $encoder->getHeaders();
-        foreach ($headers as $key => $value) {
-            header($key.': '.$value);
+        if (!headers_sent()) {
+            foreach ($headers as $key => $value) {
+                header($key.': '.$value);
+            }
         }
         return $encodedResult;
     }
