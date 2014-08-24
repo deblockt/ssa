@@ -61,4 +61,14 @@ class DefaultJsonEncoder implements \JsonSerializable, Encoder {
         }
         return $return;
     }
+
+    /**
+     * {@inherits}
+     */
+    public function getHeaders() {
+        return array(
+            'Content-type' => 'application/json'
+        );
+    }
+
 }

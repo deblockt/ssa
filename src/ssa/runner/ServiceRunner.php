@@ -135,8 +135,14 @@ class ServiceRunner {
             $encoder = new DefaultJsonEncoder();
         }
         
-        return $encoder->encode($result);
+        $encodedResult = $encoder->encode($result);
+        $headers = $encoder->getHeaders();
+        foreach ($headers as $key => $value) {
+            header($key.': '.$value);
+        }
+        return $encodedResult;
     }
+    
     /**
      * run an action of the class
      * @param $method  the method name to run

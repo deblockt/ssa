@@ -16,4 +16,11 @@ interface Encoder {
      * @return string the data encoded
      */
     public function encode($data);
+    
+    /**
+     * return the content-type
+     * 
+     * @return string content type
+     */
+    public function getHeaders();
 }

@@ -3,7 +3,7 @@
 namespace ssa\toEndTest;
 
 use ssa\runner\resolver\Pojo;
-use ssa\runner\converter\annotations\Converter;
+use ssa\runner\converter\annotations\Encoder;
 
 /**
  * Description of HelloWorld
@@ -22,13 +22,12 @@ class HelloWorld {
     }
     
     /**
-     * 
+     * @Encoder("\ssa\runner\converter\FileDownloadEncoder")
      * 
      * @param file $file1 the file
-     * @param file $file2 
      */
-    public function getFileContent($file1, $file2) {
-        return array($file1, $file2);
+    public function getFileContent($file1) {
+        return $file1;
     }
     
     /**

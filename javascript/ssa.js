@@ -32,7 +32,6 @@ var ssa = {
         ops.method = ops.method || 'get';
         ops.useFormData = ops.useFormData || false;
         ops.data = ops.data || {};
-        ops.json = true;
         ops.synchronous = false;
         
         var extractGetParameters = function (url) {
@@ -91,8 +90,13 @@ var ssa = {
                     this.xhr.onreadystatechange = function() {
                         if(self.xhr.readyState === 4 && self.xhr.status === 200) {
                             var result = self.xhr.responseText;
-                            if(ops.json === true && typeof JSON !== 'undefined') {
-                                result = JSON.parse(result);
+                            var contentType = this.getResponseHeader('content-type');
+                            if (contentType === 'text/json' || contentType === 'application/json') {
+                                if(typeof JSON !== 'undefined') {
+                                    result = JSON.parse(result);
+                                } else {
+                                    result = eval('(' + result + ')');
+                                }
                             }
                             self.successCall(result);
                         } else if(self.xhr.readyState === 4) {
