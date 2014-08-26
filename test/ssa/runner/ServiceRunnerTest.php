@@ -4,7 +4,6 @@ namespace ssa\runner;
 
 use ssa\runner\ServiceRunner;
 use ssa\runner\resolver\Pojo;
-use ssa\ServiceMetadata;
 use ssa\runner\resolver\impl\DefaultParameterResolver;
 use ssa\runner\converter\annotations\Encoder;
 use ssa\ServiceManager;
