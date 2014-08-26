@@ -100,7 +100,11 @@ var ssa = {
                             }
                             self.successCall(result);
                         } else if(self.xhr.readyState === 4) {
-                            self.failCallback && self.failCallback.apply(self.host, [self.xhr]);
+                            if (self.failCallback) {
+                                self.failCallback.apply(self.host, [self.xhr]);
+                            } else if (ssa.defaultFailHandler) {
+                                ssa.defaultFailHandler.apply(self.host, [self.xhr]);
+                            }
                         }
                         self.alwaysCallback && self.alwaysCallback.apply(self.host, [self.xhr]);
                     };
@@ -155,16 +159,10 @@ var ssa = {
             },
             successCall : function(data){
                 if (data.errorCode) {
-                    if (data.debug === true) {
-                        // affichage de l'erreur
-                        if (console && console.error) {
-                            console.error(data.errorMessage, data);
-                        } else {
-                            alert(data.errorCode + '\n' + data.errorMessage);
-                        }
-                    }
                     if (this.phpErrorCallback) {
-                        this.phpErrorCallback(data);
+                        this.phpErrorCallback.apply(this.host, [data, this.xhr]);
+                    } else if (ssa.defaultPhpErrorHandler) {
+                        ssa.defaultPhpErrorHandler.apply(this.host, [data, this.xhr]);
                     }
                 } else {
                     this.successCallback && this.successCallback.apply(this.host, [data, this.xhr]);
@@ -249,6 +247,20 @@ var ssa = {
 	}
         
         return s;
+    },
+    defaultFailHandler : function() {
+        
+    },
+    defaultPhpErrorHandler : function(data) {
+        if (data.errorCode) {
+            if (data.debug === true) {
+                if (console && console.error) {
+                    console.error(data.errorMessage, data);
+                } else {
+                    alert(data.errorCode + '\n' + data.errorMessage);
+                }
+            }
+        }
     }
 };
 
