@@ -1,7 +1,7 @@
 SSA : Simple Service Access
 ===
 
-SSA is a framework that allows to simply perform Ajax call. You can call your service as PHP.
+SSA is a framework to simply perform Ajax call. You can call your service as PHP into you javascript.
 
 Usage
 ---
@@ -60,17 +60,22 @@ This exemple add "Hello deblock !!" into the serviceResult div.
 
 For convert the service into Javascript service ssa use doc comment. It's use the @param annotation for know parameters and type parameters. If a php parameter have no comment, they will not be export into javascrit service.
 
-For run the service, the @param annotation are already use, the type is use for convert $_GET parameter into PHP type.
-Type support can be primitive, complete class name (with namespace), \DateTime(inputFormat) or array.
+For run the service, @param annotations are used, the type is use for convert $_POST parameters into PHP type.
+Type support can be primitive, complete class name (with namespace), \DateTime(inputFormat, file or array.
 \DateTime and array are specific.
 \DateTime type have parameter input format. Example \DateTime(m/d/Y)
-array can have parameter. Example array(int) array(int) array(\Path\To\My\Class) and parameters are converted.
+array can have parameter. Example array(int) array(int) array(\Path\To\My\Class) array(file) ...
+
 
 Javascript service have multiple method for handle ajax event.
 * *fail* : If a network error occurs
 * *always* : Already run after ajax call
 * *phpError* : Run if a php error occurs. (if the ssa mode is debug, the php error are logged)
 * *done* : Run when the service call is a success. 
+
+ssa.js has two default handler :
+* *defaultFailHandler* : default handler used if no specific handler are specified. It can be overrided by fail handler.
+* *defaultPhpErrorHandler* : default handler used if no specific handler are specified. It can be overrided by phpError handler.
 
 _serviceTest.js_
 ```javascript
@@ -85,7 +90,7 @@ each callback have the same object context, you can pass variable between this c
 ### Support
 
 Ssa support multiple type parameter, and return value.
-Parameters and return value can be, primitive type, object or DateTime, you can simply add an other type support.
+Parameters and return value can be, primitive type, object or DateTime, array, you can simply add an other type support.
 
 Ssa support file uploaded, if you want upload a file you must use the file, or array(file) types.
 
