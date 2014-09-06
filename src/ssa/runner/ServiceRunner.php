@@ -7,7 +7,7 @@ use ssa\annotation\AnnotationUtil;
 use ssa\runner\resolver\ParameterResolver;
 use ssa\runner\resolver\TypeNotSupportedException;
 use ssa\runner\resolver\impl\DefaultParameterResolver;
-use ssa\runner\converter\DefaultJsonSerializer;
+use ssa\runner\converter\DefaultJsonEncoder;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use ssa\ServiceManager;
@@ -124,19 +124,27 @@ class ServiceRunner {
         $result = $method->invokeArgs($service, $parametersValue);
         
         $annotationReader = $this->getAnnotationReader();        
-        $methodAnnotations = $annotationReader->getMethodAnnotations($method, 'ssa\runner\converter\annotations\Converter');
+        $methodAnnotations = $annotationReader->getMethodAnnotations($method, 'ssa\runner\converter\annotations\Encoder');
         $encoder = null;
         if (count($methodAnnotations) > 0) {
             if (!class_exists($methodAnnotations[0]->value)) {
                 throw new ClassNotFoundException($methodAnnotations[0]->value);
             }
-            $encoder = new $methodAnnotations[0]->value($result);
+            $encoder = new $methodAnnotations[0]->value();
         } else {
-            $encoder = new DefaultJsonSerializer($result);
+            $encoder = new DefaultJsonEncoder();
         }
         
-        return json_encode($encoder);
+        $encodedResult = $encoder->encode($result);
+        $headers = $encoder->getHeaders();
+        if (!headers_sent()) {
+            foreach ($headers as $key => $value) {
+                header($key.': '.$value);
+            }
+        }
+        return $encodedResult;
     }
+    
     /**
      * run an action of the class
      * @param $method  the method name to run
@@ -148,6 +156,7 @@ class ServiceRunner {
             return $this->runActionWithoutTryCatch($method, $inputParameters);
         } catch (\Exception $ex) {
             return json_encode(array(
+                'class' => get_class($ex),
                 'errorCode' => $ex->getCode(),
                 'errorMessage' => $ex->getMessage(),
                 'errorFile' => $ex->getFile(),

@@ -11,7 +11,7 @@ use Doctrine\Common\Annotations\Annotation;
  * 
  * @author thomas
  */
-class Converter {
+class Encoder {
     /**
      * the class use ton convert    
      * @var string 
@@ -21,10 +21,10 @@ class Converter {
     /**
      * set state magic method for cache method
      * @param type $array
-     * @return \ssa\runner\converter\annotations\Converter
+     * @return \ssa\runner\converter\annotations\Encoder
      */
     public static function __set_state($array) {
-        $converter = new Converter();
+        $converter = new Encoder();
         $converter->value = $array['value'];
         return $converter;
     }

@@ -50,6 +50,7 @@ class JavascriptConverter extends ServiceConverter {
         }
         $return .= $this->getServiceName() .'.' . $methodName . ' = function(';
         $paramAsJson = '{';
+        $haveFileType = false;
         foreach ($params as $name => $type) {
             $return .= $name ;   
             $paramAsJson .= '\''. $name . '\' : ' . $name ;
@@ -57,12 +58,15 @@ class JavascriptConverter extends ServiceConverter {
                 $paramAsJson .= ',';
                 $return .= ', ';
             }
+            if ($this->mustUseFormData($type)) {
+                $haveFileType = true;
+            }
         } 
         $paramAsJson .= '}';
         // add all function parameter
         $return .= ') {'. $this->END_OF_LINE;
         $return .= $this->tabulate(1).
-                    'return ssa.call(\''.$url.'\', '.$paramAsJson.', false);'
+                    'return ssa.call(\''.$url.'\', '.$paramAsJson.', false, '.($haveFileType ? 'true' : 'false').');'
                     .$this->END_OF_LINE;
         // add call code
         $return .= '}; '.$this->END_OF_LINE;
@@ -177,6 +181,21 @@ class JavascriptConverter extends ServiceConverter {
             );
         }
         return $return;
+    }
+    
+    /**
+     * function return true if this type must use form data
+     * 
+     * @param array $type
+     */
+    public function mustUseFormData(array $types) {
+        foreach ($types as $type) {
+            if ($type == 'file') {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     public function implodeParameterType($typeExploded) {

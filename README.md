@@ -1,7 +1,7 @@
 SSA : Simple Service Access
 ===
 
-SSA is a framework that allows to simply perform Ajax call. You can call your service as PHP.
+SSA is a framework to simply perform Ajax call. You can call your service as PHP into you javascript.
 
 Usage
 ---
@@ -60,17 +60,22 @@ This exemple add "Hello deblock !!" into the serviceResult div.
 
 For convert the service into Javascript service ssa use doc comment. It's use the @param annotation for know parameters and type parameters. If a php parameter have no comment, they will not be export into javascrit service.
 
-For run the service, the @param annotation are already use, the type is use for convert $_GET parameter into PHP type.
-Type support can be primitive, complete class name (with namespace), \DateTime(inputFormat) or array.
+For run the service, @param annotations are used, the type is use for convert $_POST parameters into PHP type.
+Type support can be primitive, complete class name (with namespace), \DateTime(inputFormat, file or array.
 \DateTime and array are specific.
 \DateTime type have parameter input format. Example \DateTime(m/d/Y)
-array can have parameter. Example array(int) array(int) array(\Path\To\My\Class) and parameters are converted.
+array can have parameter. Example array(int) array(int) array(\Path\To\My\Class) array(file) ...
+
 
 Javascript service have multiple method for handle ajax event.
 * *fail* : If a network error occurs
 * *always* : Already run after ajax call
 * *phpError* : Run if a php error occurs. (if the ssa mode is debug, the php error are logged)
 * *done* : Run when the service call is a success. 
+
+ssa.js has two default handler :
+* *defaultFailHandler* : default handler used if no specific handler are specified. It can be overrided by fail handler.
+* *defaultPhpErrorHandler* : default handler used if no specific handler are specified. It can be overrided by phpError handler.
 
 _serviceTest.js_
 ```javascript
@@ -85,7 +90,56 @@ each callback have the same object context, you can pass variable between this c
 ### Support
 
 Ssa support multiple type parameter, and return value.
-Parameters and return value can be, primitive type, object or DateTime, you can simply add an other type support.
+Parameters and return value can be, primitive type, object or DateTime, array, you can simply add an other type support.
+
+Ssa support file uploaded, if you want upload a file you must use the file, or array(file) types.
+
+*service.php*
+```php
+class FileService {
+
+    /**
+     * @param file $file
+     */
+    public function upload($file) {
+        // file is like this
+        // array(
+        //  'name' => 'string',
+        //  'size' => int,
+        //  'error' => int,
+        //  'tmp_name' => 'string',
+        //  'type' => 'string'
+        // )
+    }
+    
+    /**
+     * @param array(file) $files
+     */
+    public function uploadMultiple($files) {
+        foreach ($files as $file) {
+            $this->upload($file);
+        }
+    }
+}
+```
+
+*FileUpload.js*
+```javascript
+// upload one file
+FileService.upload(document.getElementById('simpleFileUploadInput').files);
+// upload multiple file
+FileService.uploadMultipleFile(document.getElementById('multipleFileUploadInput').files);
+```
+
+Warning the file uploaded is not support by all navigator, it use FormData class.
+The method ssa.supportFileUpload return true if the navigator support this function.
+When you run a service with file upload the callback formDataError is call is this function is not supported.
+```javascript
+FileService.upload(document.getElementById('simpleFileUploadInput').files)
+           .formDataError(function(){
+                alert('Your navigator is too old for this function');
+           });
+```
 
 ### Configuration 
 
@@ -188,16 +242,16 @@ $serviceRunner = new ServiceRunner($service, new MyParameterResolver());
 // run the action with get parameters
 echo $serviceRunner->runAction($action, $_GET);
 ```
-#### Create a converter
+#### Create an encoder
 
-The converter is use for convert your function return into javascipt value.
-The default converter is the JsonConverter, this converter can convert primitive type, array, and object. Objects are convert with getter methods, each getter is convert into a JSON property.
-If you need you can create your own converter, you can do this, it's simple. On your service action you need to add @Converter annotation.
+The encoder is use for encode your function return into javascipt value.
+The default encoder is the JsonEncoder, this encoder can convert primitive type, array, and object. Objects are convert with getter methods, each getter is convert into a JSON property.
+If you need you can create your own encoder, you can do this, it's simple. On your service action you need to add @Encoder annotation.
 *Service.php*
 ```php
 class Service {
   /**
-   * @Converter(\MyJsonConverter)
+   * @Encoder(\MyEncoder)
    *
    * @param string $firstParameter
    *
@@ -208,8 +262,8 @@ class Service {
   }
 }
 ```
-The action method use MyJsonConverter for convert the return on JSON.
-You serializer must implements JsonSerializable, or extends DefaultJsonSerializer.
+The action method use MyEncoder for convert the return on JSON or other format.
+Your encoder must implements ssa\runner\converter\Encoder, or extends ssa\runner\converter\DefaultJsonEncoder.
 
 
 Installation
@@ -280,7 +334,7 @@ list($service, $action) = explode('.', $_GET['service']);
 // create the service runner
 $serviceRunner = new ServiceRunner($service);
 // run the action with get parameters
-echo $serviceRunner->runAction($action, $_GET);
+echo $serviceRunner->runAction($action, array_merge($_POST, $_FILES));
 ```
 
 *javascript.php*

@@ -5,6 +5,8 @@ namespace ssa\runner\resolver\impl;
 use ssa\runner\resolver\ParameterResolver;
 use ssa\runner\resolver\PrimitiveResolverCOR;
 use ssa\runner\resolver\ObjectResolverCOR;
+use ssa\runner\resolver\impl\FilePrimitiveResolver;
+use ssa\runner\resolver\impl\ArrayFilePrimitiveResolver;
 
 /**
  * Description of DefaultParameterResolver
@@ -47,6 +49,9 @@ class DefaultParameterResolver implements ParameterResolver {
             $return = new DefaultParameterResolver();
             $return->addPrimitiveResolver(new DefaultPrimitiveResolver());
             $return->addPrimitiveResolver(new ArrayPrimitiveResolver());
+            $return->addPrimitiveResolver(new FilePrimitiveResolver());
+            $return->addPrimitiveResolver(new ArrayFilePrimitiveResolver());
+            
             $return->addObjectResolver(new DefaultObjectResolver());
             $return->addObjectResolver(new DateTimeObjectResolver());
             DefaultParameterResolver::$defaultParameterResolver = $return;
