@@ -264,6 +264,15 @@ var ssa = {
     }
 };
 
+// Add angular js support
+if (angular) {
+    var ssaModule = angular.module('ssa', []);
+    ssaModule.factory('ssa', function(){
+        return ssa;
+    });
+}
+
+
 /** redefinition array.isArray */
 (function () {
     var toString = Object.prototype.toString,
