@@ -69,6 +69,8 @@ abstract class ServiceConverter {
             }
         }
         
+        $return .= $this->endConvertClass($this->getServiceName());
+        
         if ($cacheProvider != NULL) {
             $cacheData = array(
                 'updateTime' => $updateFileClass,
@@ -78,6 +80,17 @@ abstract class ServiceConverter {
         }
         
         return $return;
+    }
+    
+    /***
+     * function call when the converter have convert all methods
+     * 
+     * @param $serviceName the name of the service to convert
+     * 
+     * @return string the string to add at the end of the service converted
+     */
+    protected function endConvertClass($serviceName) {
+        // Default do nothing
     }
     
     /**

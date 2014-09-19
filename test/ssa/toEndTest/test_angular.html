@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html ng-app="ssa.test">
+    <head>
+        <title> Page de test de ssa</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+        <script type="text/javascript" src="../../../javascript/ssa.js" ></script>
+        <script type="text/javascript" src="javascript.php?service=helloWorldService&type=angular"></script>
+        <script type="text/javascript">           
+            // dépendence to ssa 
+            // ssa contains ssa and al your services
+            var controller = angular.module('ssa.test', ['ssa']);
+            controller.controller('controller', function($scope, helloWorldService){              
+                $scope.yourName = 'no name';
+                $scope.firstHelloWorld = 'no name';
+                $scope.yourNameResult = '';
+                $scope.$watch('yourName', function(newValue, oldValue) {
+                    helloWorldService.helloYou(newValue).done(function(data) {
+                        $scope.yourNameResult = data;
+                        $scope.$apply();
+                    });
+                });
+                helloWorldService.helloYou('deblock').done(function(data){
+                    $scope.$apply(function(){
+                        $scope.firstHelloWorld = data;
+                    });
+                }); 
+            });
+        </script>
+    </head>
+    <body ng-controller="controller">
+        <div >
+            Hello world return : {{firstHelloWorld}}
+        </div>
+        <div> 
+            Hello You 
+            <input ng-model="yourName"  placeholder="Your name"/> : {{yourNameResult}}
+        </div>
+        
+        <form action="http://localhost:8080/ssa/test/ssa/toEndTest/run.php" method="POST" enctype="multipart/form-data">
+            <input type="text" name="service" value="HelloWorld.getFileContent"/>
+            
+            <input type="file" multiple="multiple" id="fileUpload1" name="file[]"/>
+            <input type="file" multiple="multiple" id="fileUpload2" name="file[]"/>
+        </form>
+    </body>
+</html>

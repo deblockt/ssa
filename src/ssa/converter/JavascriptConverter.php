@@ -12,7 +12,7 @@ use ssa\Configuration;
  * @author thomas
  */
 class JavascriptConverter extends ServiceConverter {
-    private $END_OF_LINE = "\n" ;
+    protected $END_OF_LINE = "\n" ;
     
     private $debug = true;
     
@@ -130,7 +130,7 @@ class JavascriptConverter extends ServiceConverter {
      * 
      * @return array each ligne of the doc
      */
-    private function getMethodComment($doc) {
+    protected function getMethodComment($doc) {
         preg_match_all('#\/\*\*(.*)(\*\s+@param|\*\s+@return|\**/)#isU', $doc, $annotations);
         if (!isset($annotations[1][0])) {
             return array();
@@ -153,7 +153,7 @@ class JavascriptConverter extends ServiceConverter {
      * 
      * @param string $doc
      */
-    public function getMethodReturn($doc) {
+    protected function getMethodReturn($doc) {
         preg_match_all('#@return(.*)\n#isU', $doc, $annotations);
         if (!isset($annotations[1][0])) {
             return null;
@@ -168,7 +168,7 @@ class JavascriptConverter extends ServiceConverter {
      * @param string $doc le commentaire de la fonction
      * @return array la liste des types pour chaque paramétre
      */
-    public function getMethodParameters($doc) {
+    protected function getMethodParameters($doc) {
         // récupération des type et des noms des variables
         preg_match_all('#@param\s+(.+)\s+\$([^\s]+)(.*)[\n|\*]#i', $doc, $annotations);
         
@@ -188,7 +188,7 @@ class JavascriptConverter extends ServiceConverter {
      * 
      * @param array $type
      */
-    public function mustUseFormData(array $types) {
+    protected function mustUseFormData(array $types) {
         foreach ($types as $type) {
             if ($type == 'file') {
                 return true;
@@ -198,7 +198,7 @@ class JavascriptConverter extends ServiceConverter {
         return false;
     }
     
-    public function implodeParameterType($typeExploded) {
+    protected function implodeParameterType($typeExploded) {
         $types = implode('(', $typeExploded);
         $count = count($typeExploded);
         

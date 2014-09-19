@@ -11,5 +11,5 @@ Configuration::getInstance()->configure(array(
    // 'cacheDirectory' => __DIR__.'/cache'
 ));
 ServiceManager::getInstance()->registerAllServices(array(
-    'HelloWorld' => array('class' => 'ssa\toEndTest\HelloWorld')
+    'helloWorldService' => array('class' => 'ssa\toEndTest\HelloWorld')
 ));
