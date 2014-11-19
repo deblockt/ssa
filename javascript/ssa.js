@@ -265,7 +265,7 @@ var ssa = {
 };
 
 // Add angular js support
-if (angular) {
+if (typeof angular != 'undefined') {
     var ssaModule = angular.module('ssa', []);
     ssaModule.factory('ssa', function(){
         return ssa;
