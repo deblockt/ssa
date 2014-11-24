@@ -19,7 +19,7 @@ class AngularJavascriptConverter extends JavascriptConverter {
      */
     protected function convertClass($className) {
         $txt = 'var ssaModule = angular.module(\'ssa\');'.$this->END_OF_LINE;
-        $txt .= 'ssaModule.factory(\''.$className.'\',function(ssa){'.$this->END_OF_LINE;
+        $txt .= 'ssaModule.factory(\''.$className.'\',[\'ssa\', function(ssa){'.$this->END_OF_LINE;
         $txt .= parent::convertClass($className);
         return $txt;
     }
@@ -30,6 +30,6 @@ class AngularJavascriptConverter extends JavascriptConverter {
      * @return string
      */
     protected function endConvertClass($className) {
-        return 'return ' . $className. ';'. $this->END_OF_LINE .'});';
+        return 'return ' . $className. ';'. $this->END_OF_LINE .'}]);';
     }
 }
