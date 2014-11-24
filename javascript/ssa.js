@@ -272,6 +272,12 @@ if (typeof angular != 'undefined') {
     });
 }
 
+if (typeof define != 'undefined') {
+    define([], function(){
+        return ssa;
+    });
+}
+
 
 /** redefinition array.isArray */
 (function () {

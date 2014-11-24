@@ -141,6 +141,42 @@ FileService.upload(document.getElementById('simpleFileUploadInput').files)
            });
 ```
 
+
+Ssa support multiple javascript framework :
+  - you can use ssa standolone only on include ssa.js file
+  - you can use ssa with angular js you just need to include ssa.js file and your service generated file. After use injection dependencies for get your service.
+    for exemple : 
+```javascript
+  // add ssa as module dependencies
+  var controller = angular.module('ssa.test', ['ssa']);
+  // get simply your service on your controller with the service name. here the service is helloWorldService
+  controller.controller('controller', function($scope, helloWorldService){   
+  });
+```
+  - you can use ssa with requirejs you just need to include ssa on your configuration of requirejs.
+```javascript
+// configuration must containe a ssa link
+require.config({
+  paths: {
+      // you must add ssa srcipt on your configuration
+      "ssa": "path/to/ssa/javascript/file",
+      // warning if you don't use htaccess service param is like this /serviceName
+      // if you use htacess you can have url like this /javascript/ssa/service/servicename.js who redirect on javascript.php
+      // path of your javscript service generator
+      "ssaService" : "javascript.php?type=requirejs&service=" 
+  }
+});
+
+// juste require your service
+require( ["ssaService/helloWorldService"],
+  function(helloWorldService) {
+    // helloWorldService is you php service
+  }
+);
+```
+
+If you want see ssa exemple you can look on test/ssa/toEndTest directory
+
 ### Configuration 
 
 The ssa configuration is different between standalone version, and the symfony version.
