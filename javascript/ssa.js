@@ -91,7 +91,7 @@ var ssa = {
                         if(self.xhr.readyState === 4 && self.xhr.status === 200) {
                             var result = self.xhr.responseText;
                             var contentType = this.getResponseHeader('content-type');
-                            if (contentType === 'text/json' || contentType === 'application/json') {
+                            if (contentType.indexOf('text/json') >= 0 || contentType.indexOf('application/json') >= 0) {
                                 if(typeof JSON !== 'undefined') {
                                     result = JSON.parse(result);
                                 } else {
