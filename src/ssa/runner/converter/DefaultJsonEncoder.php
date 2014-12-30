@@ -57,7 +57,11 @@ class DefaultJsonEncoder implements \JsonSerializable, Encoder {
                 }
             }
         } else if (is_string($data)) {
-            $return = utf8_encode($data);
+            if ('UTF-8' != mb_detect_encoding($data)) {
+                $return = utf8_encode($data);
+            } else {
+                $return = $data;
+            }
         } else {
             $return = $data;
         }
