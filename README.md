@@ -76,6 +76,8 @@ Javascript service have multiple method for handle ajax event.
 ssa.js has two default handler :
 * *defaultFailHandler* : default handler used if no specific handler are specified. It can be overrided by fail handler.
 * *defaultPhpErrorHandler* : default handler used if no specific handler are specified. It can be overrided by phpError handler.
+* *addStartCallListener* : Listener call before each ajax call
+* *addEndCallListener* : Listener call after each ajax call
 
 _serviceTest.js_
 ```javascript
