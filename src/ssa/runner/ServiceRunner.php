@@ -15,6 +15,9 @@ use ssa\Configuration;
 use Doctrine\Common\Annotations\CachedReader;
 use ssa\runner\BadTypeException;
 
+use ssa\runner\converter\annotations\Encoder;
+use ssa\runner\annotations\RunnerHandler;
+
 /**
  * this class can call a service
  */
@@ -60,7 +63,7 @@ class ServiceRunner {
     
     /**
      * run the action without try catch for framework exception
-     * @param type $method
+     * @param type $smethod
      * @param type $inputParameters
      * @return type
      * 
@@ -69,22 +72,31 @@ class ServiceRunner {
      * @throws MissingParameterException
      * @throws ClassNotFoundException
      */
-    private function runActionWithoutTryCatch($method, $inputParameters = array()) {
+    private function runActionWithoutTryCatch($smethod, $inputParameters = array()) {
         if (count($this->metaData->getMethods()) > 0 
             && 
-            !in_array($method, $this->metaData->getMethods())
+            !in_array($smethod, $this->metaData->getMethods())
         ) {            
-            throw new ActionNotSupportedException($method);
+            throw new ActionNotSupportedException($smethod);
         }
         
-        $method = $this->metaData->getClass()->getMethod($method);
+        $method = $this->metaData->getClass()->getMethod($smethod);
         // lecture de l'annotation de la méthode
-        
-        AnnotationRegistry::registerAutoloadNamespace(
-            '\ssa\runner\converter\annotations', 
-            __DIR__."/converter/annotations/"
-        );
-        
+
+        $annotationReader = $this->getAnnotationReader();        
+			
+				
+		// read anotations and check if a runner handler is present
+		$methodAnnos = $annotationReader->getMethodAnnotations($method);
+		
+        foreach ($methodAnnos as $anno) {
+			// call before handler
+			if ($anno instanceof RunnerHandler && method_exists($anno, 'before')) {
+				$anno->before($smethod, $inputParameters, $this->metaData);
+			}
+		}
+		
+		
         $docParameters = AnnotationUtil::getMethodParameters($method->getDocComment());
         $parameters = $method->getParameters();
         $parametersValue = array();
@@ -120,21 +132,34 @@ class ServiceRunner {
             }
             $parametersValue[] = $currentValue;
         }
-        $service = $this->metaData->getInstance();
-        $result = $method->invokeArgs($service, $parametersValue);
         
-        $annotationReader = $this->getAnnotationReader();        
-        $methodAnnotations = $annotationReader->getMethodAnnotations($method, 'ssa\runner\converter\annotations\Encoder');
-        $encoder = null;
-        if (count($methodAnnotations) > 0) {
-            if (!class_exists($methodAnnotations[0]->value)) {
-                throw new ClassNotFoundException($methodAnnotations[0]->value);
-            }
-            $encoder = new $methodAnnotations[0]->value();
-        } else {
+		
+		$service = $this->metaData->getInstance();
+        $result = $method->invokeArgs($service, $parametersValue);
+		
+		$encoder = null;        
+		foreach ($methodAnnos as $anno) {
+			if ($anno instanceof Encoder) {
+				if (!class_exists($anno->value)) {
+					throw new ClassNotFoundException($anno->value);
+				}
+				$encoder = new $anno->value();
+				break;
+			}
+			
+			// call after handler
+			if ($anno instanceof RunnerHandler && method_exists($anno, 'after')) {
+				$after = $anno->after($smethod, $inputParameters, $result, $this->metaData);
+				if ($after != null) {
+					$result = $after;
+				}
+			}
+		}
+
+		if ($encoder == null) {
             $encoder = new DefaultJsonEncoder();
         }
-        
+
         $encodedResult = $encoder->encode($result);
         $headers = $encoder->getHeaders();
         if (!headers_sent()) {
