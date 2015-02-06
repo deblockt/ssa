@@ -10,20 +10,30 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">
         <script type="text/javascript" src="../../../javascript/ssa.js" ></script>
-        <script type="text/javascript" src="javascript.php?service=HelloWorld"></script>
+        <script type="text/javascript" src="javascript.php?service=helloWorldService"></script>
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
         <script type="text/javascript">
-            HelloWorld.helloYou('deblockt').done(function(data) {
+		
+			ssa.addStartCallListener(function(host) {
+				console.log('start', host);
+			});
+			
+			ssa.addEndCallListener(function(host) {
+				console.log('end', host);
+			});
+			
+            helloWorldService.helloYou('deblockt').done(function(data) {
                 document.getElementById('helloYou').innerHTML = data;
             });
                       
             $().ready(function(){
                 $('input[name="your_name"]').blur(function(){
-                    HelloWorld.helloYou($(this).val()).done(function(data){
+                    helloWorldService.helloYou($(this).val()).done(function(data){
                          document.getElementById('helloYou2').innerHTML = data;
                     });
                 });
             });
+
         </script>
     </head>
     <body>
