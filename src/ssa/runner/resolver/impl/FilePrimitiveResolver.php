@@ -24,7 +24,7 @@ use ssa\runner\resolver\PrimitiveResolverCOR;
 class FilePrimitiveResolver extends PrimitiveResolverCOR {
     
     protected function canResolve(array &$type) {
-        return $type[0] == 'file';
+        return isset($type[0]) && $type[0] == 'file';
     }
 
     protected function resolve($value, array &$type) {

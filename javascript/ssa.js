@@ -4,6 +4,8 @@
 var ssa = {
     rbracket : /\[\]$/,
     r20 : /%20/g,
+	startCallListener : [],
+	endCallListener : [],
     supportFileUpload : function(){
         if ('undefined' !== typeof window.FormData) {
             fd = new FormData;
@@ -27,7 +29,8 @@ var ssa = {
         });  
     },
     ajaxRequest: function(ops) {
-        if(typeof ops === 'string') ops = { url: ops };
+        var _thisSsa = this;
+		if(typeof ops === 'string') ops = { url: ops };
         ops.url = ops.url || '';
         ops.method = ops.method || 'get';
         ops.useFormData = ops.useFormData || false;
@@ -80,7 +83,9 @@ var ssa = {
         }
         
         var api = {
-            host: {},
+            host: {	
+				ops : ops
+			},
             process: function(ops) {
                 var self = this;
                 this.xhr = null;
@@ -88,10 +93,14 @@ var ssa = {
                 else if(window.XMLHttpRequest) { this.xhr = new XMLHttpRequest(); }
                 if(this.xhr) {
                     this.xhr.onreadystatechange = function() {
-                        if(self.xhr.readyState === 4 && self.xhr.status === 200) {
+                        if(self.xhr.readyState === 4 && self.xhr.status === 200) {							
+							// call listeners endCall
+							_thisSsa.endCall(self.host);
+							self.alwaysCallback && self.alwaysCallback.apply(self.host, [self.xhr]);
+							
                             var result = self.xhr.responseText;
                             var contentType = this.getResponseHeader('content-type');
-                            if (contentType === 'text/json' || contentType === 'application/json') {
+                            if (contentType.indexOf('text/json') >= 0 || contentType.indexOf('application/json') >= 0) {
                                 if(typeof JSON !== 'undefined') {
                                     result = JSON.parse(result);
                                 } else {
@@ -100,16 +109,24 @@ var ssa = {
                             }
                             self.successCall(result);
                         } else if(self.xhr.readyState === 4) {
+							// call listeners endCall
+							_thisSsa.endCall(self.host);
+							self.alwaysCallback && self.alwaysCallback.apply(self.host, [self.xhr]);
+							
                             if (self.failCallback) {
                                 self.failCallback.apply(self.host, [self.xhr]);
                             } else if (ssa.defaultFailHandler) {
                                 ssa.defaultFailHandler.apply(self.host, [self.xhr]);
                             }
                         }
-                        self.alwaysCallback && self.alwaysCallback.apply(self.host, [self.xhr]);
+                        
                     };
                 }
                 
+				
+				// call listeners startCall
+				_thisSsa.startCall(this.host);
+				
                 if(ops.method === 'get') {
                     this.xhr.open("GET", ops.url + getParams(ops.data, ops.url), !ops.synchronous);
                 } else {
@@ -183,6 +200,7 @@ var ssa = {
         
         return api.process(ops);
     },
+	
     buildParams : function( prefix, obj, add ) {        
         if (obj instanceof FileList) {
             for (var i = 0; i < obj.length; i++) { 
@@ -261,8 +279,52 @@ var ssa = {
                 }
             }
         }
-    }
+    },
+	/**
+	 * function to call all startCallListener
+	 * @param ssaActionCaller the action caller 
+	 */
+	startCall : function(ssaActionHostCaller){
+		for (var i in this.startCallListener) {
+			this.startCallListener[i](ssaActionHostCaller);
+		}
+	},
+	/**
+	 * add a listener. Listener is call when a new request is do
+	 */
+	addStartCallListener : function(listener){
+		this.startCallListener.push(listener);		
+	},
+	/**
+	 * function call all EndCallListener
+	 */
+	endCall : function(ssaActionHostCaller) {
+		for (var i in this.endCallListener) {
+			this.endCallListener[i](ssaActionHostCaller);
+		}
+	},
+	/**
+	 * add a listener. Listener is call when a request is finish
+	 */
+	addEndCallListener : function(listener) {
+		this.endCallListener.push(listener);
+	}
 };
+
+// Add angular js support
+if (typeof angular != 'undefined') {
+    var ssaModule = angular.module('ssa', []);
+    ssaModule.factory('ssa', function(){
+        return ssa;
+    });
+}
+
+if (typeof define != 'undefined') {
+    define([], function(){
+        return ssa;
+    });
+}
+
 
 /** redefinition array.isArray */
 (function () {

@@ -19,7 +19,7 @@ class ArrayPrimitiveResolver extends PrimitiveResolverCOR {
      * {@inheritdoc}
      */
     protected function canResolve(array &$type) {
-        return $type[0] == 'array' && count($type) > 1  ;
+        return count($type) > 1  && $type[0] == 'array'  ;
     }
 
     /**

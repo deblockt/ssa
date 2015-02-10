@@ -56,6 +56,12 @@ class DefaultJsonEncoder implements \JsonSerializable, Encoder {
                      $return[$property] = $this->serialize($method->invoke($data));
                 }
             }
+        } else if (is_string($data)) {
+            if ('UTF-8' != mb_detect_encoding($data)) {
+                $return = utf8_encode($data);
+            } else {
+                $return = $data;
+            }
         } else {
             $return = $data;
         }

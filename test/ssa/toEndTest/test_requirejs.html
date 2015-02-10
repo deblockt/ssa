@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title> Page de test de ssa</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+      
+        <script type="text/javascript" src="http://requirejs.org/docs/release/2.1.15/minified/require.js" ></script>
+        <script type="text/javascript">
+             // configuration must containe a ssa link
+             require.config({
+                paths: {
+                    // you must add ssa srcipt on your configuration
+                    "ssa": "../../../javascript/ssa",
+                    // warning if you don't use htaccess service param is like this /serviceName
+                    // if you use htacess you can have url like this /javascript/ssa/service/servicename.js who redirect on javascript.php
+                    "ssaService" : "javascript.php?type=requirejs&service=" 
+                }
+              });
+
+              require( ["ssaService/helloWorldService"],
+                function(helloWorldService) {
+                    helloWorldService.helloYou('deblockt').done(function(data) {
+                        $('#helloYou').html(data);
+                    });
+                              
+                    $().ready(function(){
+                        $('input[name="your_name"]').blur(function(){
+                            helloWorldService.helloYou($(this).val()).done(function(data){
+                                 $('helloYou2').html(data);
+                            });
+                        });
+                    });
+                }
+              );
+        </script>
+    </head>
+    <body>
+        <div>Hello world return : <span id="helloYou"></span> </div>
+        <pre>
+            <code class="javascript">            
+                HelloWorld.helloYou('deblockt').done(function(data) {
+                    document.getElementById('helloYou').innerHTML = data;
+                });
+            </code>
+        </pre>
+        <div> Hello You <input name="your_name" placeholder="Your name"/> : <span id="helloYou2"></span></div>
+        <pre>
+            <code class="javascript">            
+                $('input[name="your_name"]').blur(function(){
+                    HelloWorld.helloYou($(this).val()).done(function(data){
+                         document.getElementById('helloYou2').innerHTML = data;
+                    });
+                });
+            </code>
+        </pre>
+        
+        <form action="http://localhost:8080/ssa/test/ssa/toEndTest/run.php" method="POST" enctype="multipart/form-data">
+            <input type="text" name="service" value="HelloWorld.getFileContent"/>
+            
+            <input type="file" multiple="multiple" id="fileUpload1" name="file[]"/>
+            <input type="file" multiple="multiple" id="fileUpload2" name="file[]"/>
+        </form>
+
+
+
+
+        <h3> complete source code </h3>
+
+        <pre>
+            <code class="javascript">
+                // configuration must containe a ssa link
+                 require.config({
+                    paths: {
+                        // you must add ssa srcipt on your configuration
+                        "ssa": "../../../javascript/ssa",
+                        // warning if you don't use htaccess service param is like this /serviceName
+                        // if you use htacess you can have url like this /javascript/ssa/service/servicename.js who redirect on javascript.php
+                        "ssaService" : "javascript.php?type=requirejs&service=" 
+                    }
+                  });
+
+                  require( ["ssaService/helloWorldService"],
+                    function(helloWorldService) {
+                        helloWorldService.helloYou('deblockt').done(function(data) {
+                            $('#helloYou').html(data);
+                        });
+                                  
+                        $().ready(function(){
+                            $('input[name="your_name"]').blur(function(){
+                                helloWorldService.helloYou($(this).val()).done(function(data){
+                                     $('helloYou2').html(data);
+                                });
+                            });
+                        });
+                    }
+                  );
+            </code>
+        </pre>
+    </body>
+</html>

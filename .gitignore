@@ -2,6 +2,7 @@ vendor/
 cache/
 **/cache/
 nbProject/
+composer.phar
 
 #############
 ## Windows detritus
