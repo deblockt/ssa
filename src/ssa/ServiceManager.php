@@ -3,7 +3,6 @@
 namespace ssa;
 
 use ssa\ServiceMetadata;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 
 /**
  * This class contains the list of accessible service
@@ -30,16 +29,6 @@ class ServiceManager {
      */
     public static function getInstance() {
         if (self::$instance == null) {
-            AnnotationRegistry::registerAutoloadNamespace(
-                'ssa\runner\converter\annotations', 
-                __DIR__.'/../'
-            );
-			
-			AnnotationRegistry::registerAutoloadNamespace(
-                'ssa\runner\annotations', 
-                __DIR__.'/../'
-            );
-			
             self::$instance = new ServiceManager();
         }
         return self::$instance; 

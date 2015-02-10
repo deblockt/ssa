@@ -158,7 +158,7 @@ var ssa = {
                 return this;
             },
             successCall : function(data){
-                if (data.errorCode) {
+                if (data.errorCode !== undefined) {
                     if (this.phpErrorCallback) {
                         this.phpErrorCallback.apply(this.host, [data, this.xhr]);
                     } else if (ssa.defaultPhpErrorHandler) {
@@ -252,7 +252,7 @@ var ssa = {
         
     },
     defaultPhpErrorHandler : function(data) {
-        if (data.errorCode) {
+        if (data.errorCode !== undefined) {
             if (data.debug === true) {
                 if (console && console.error) {
                     console.error(data.errorMessage, data);

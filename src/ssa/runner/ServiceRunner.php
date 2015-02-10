@@ -180,7 +180,8 @@ class ServiceRunner {
         try {
             return $this->runActionWithoutTryCatch($method, $inputParameters);
         } catch (\Exception $ex) {
-            return json_encode(array(
+            header('Content-type: text/json');
+			return json_encode(array(
                 'class' => get_class($ex),
                 'errorCode' => $ex->getCode(),
                 'errorMessage' => $ex->getMessage(),

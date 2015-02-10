@@ -6,6 +6,7 @@ use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\PhpFileCache;
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\MemcacheCache;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 
 /**
  * Description of Configuration
@@ -76,6 +77,16 @@ class Configuration {
      */
     public static function getInstance() {
         if (self::$instance == null) {
+			// autoload annotations
+			AnnotationRegistry::registerLoader(function($class) {
+				if (class_exists($class)){
+					return true;
+				}
+				
+				return false;
+			});
+           
+			// create configuration singleton
             self::$instance = new Configuration();
         }
         return self::$instance;

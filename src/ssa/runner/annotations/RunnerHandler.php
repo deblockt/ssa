@@ -13,7 +13,7 @@ use ssa\ServiceMetadata;
  * 
  * @author thomas
  */ 
-class RunnerHandler {
+abstract class  RunnerHandler {
     
     /**
      * set state magic method for cache method
@@ -34,9 +34,7 @@ class RunnerHandler {
 	 *
 	 * @throw Exception if action must no be call
 	 */
-	public function before($method,array $inputParameters,ServiceMetadata $metaData) {
-	
-	}
+	public abstract function before($method,array $inputParameters,ServiceMetadata $metaData);
 	
 	/**
 	 * call before service call
@@ -48,7 +46,5 @@ class RunnerHandler {
 	 *
 	 * can return value tranformed $result, encoder is call after this method
 	 */
-	public function after($method,array $inputParameters, $result, ServiceMetadata $metaData) {
-		
-	}
+	public abstract function after($method,array $inputParameters, $result, ServiceMetadata $metaData);
 }
