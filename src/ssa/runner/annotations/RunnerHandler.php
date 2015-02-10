@@ -13,17 +13,8 @@ use ssa\ServiceMetadata;
  * 
  * @author thomas
  */ 
-abstract class  RunnerHandler {
+interface  RunnerHandler {
     
-    /**
-     * set state magic method for cache method
-     * @param type $array
-     * @return \ssa\runner\converter\RunnerHandler
-     */
-    public static function __set_state($array) {
-        $converter = new RunnerHandler();
-        return $converter;
-    }
 	
 	/**
 	 * call before service call
@@ -34,7 +25,7 @@ abstract class  RunnerHandler {
 	 *
 	 * @throw Exception if action must no be call
 	 */
-	public abstract function before($method,array $inputParameters,ServiceMetadata $metaData);
+	public function before($method,array $inputParameters,ServiceMetadata $metaData);
 	
 	/**
 	 * call before service call
@@ -46,5 +37,5 @@ abstract class  RunnerHandler {
 	 *
 	 * can return value tranformed $result, encoder is call after this method
 	 */
-	public abstract function after($method,array $inputParameters, $result, ServiceMetadata $metaData);
+	public function after($method,array $inputParameters, $result, ServiceMetadata $metaData);
 }
