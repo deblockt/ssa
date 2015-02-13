@@ -25,7 +25,7 @@ interface  RunnerHandler {
 	 *
 	 * @throw Exception if action must no be call
 	 */
-	public function before($method,array $inputParameters,ServiceMetadata $metaData);
+	public function before($method,array &$inputParameters,ServiceMetadata $metaData);
 	
 	/**
 	 * call before service call
@@ -37,5 +37,5 @@ interface  RunnerHandler {
 	 *
 	 * can return value tranformed $result, encoder is call after this method
 	 */
-	public function after($method,array $inputParameters, $result, ServiceMetadata $metaData);
+	public function after($method,array &$inputParameters, $result, ServiceMetadata $metaData);
 }
