@@ -396,5 +396,98 @@ for example for get javascript HelloWorld service the url is _http://localhost/j
 
 finaly you need include ssa.js into you javascript folder.
 
+More usages
+--
+
+## Add Own Javascript on generated service
+ You can add your own javascript on the generated services.
+ If you wand inject your own code, you need use ssa\converter\annotations\AddJavascript annotation. It have own parameter : the js file to add, the path is a relative path.
+ 
+ *AuthenticateService.php*
+ ``` php
+ use ssa\converter\annotations\AddJavascript;
+/**
+ * @AddJavascript("../../javascript/ssaSecureModule.js")
+ * @author thomas
+ */	
+class AuthenticateService {
+}
+ ```
+ 
+ If you want add methods on generated service, you can create function named "module", this function have one parameter : the generated service. this function is call when the service is generating.
+ 
+## Add serviceRunner handler
+ 
+ You can add handler for serviceRunner, the handler called before and after the service runned. The handler is an Annotation, if the annotation is on the function comment, handlers are called.
+ 
+ You need to create an annotation like this : 
+ 
+ *Secure.php*
+ ``` php
+use ssa\runner\annotations\RunnerHandler;
+use Doctrine\Common\Annotations\Annotation;
 
 
+/**
+ *
+ * @Annotation
+ * 
+ * @author thomas
+ */
+class Secure implements RunnerHandler {
+    /**
+     * set state magic method for cache method
+     * @param type $array
+     * @return \ssa\secure\annotations\Secure
+     */
+    public static function __set_state($array) {
+        $secure = new Secure();
+        return $secure;
+    }
+	
+	/**
+	 * call before service call
+	 *
+	 * @param string $method the action name
+	 * @param array $inputParameters service parameter, (service => the service call, service.method)
+	 * @param ServiceMetadata $metaData
+	 *
+	 * @throw Exception if action must no be call
+	 */
+	public function before($method,array &$inputParameters,ServiceMetadata $metaData) {
+	
+	}
+	
+    /**
+	 * call before service call
+	 *
+	 * @param string $method the action name
+	 * @param array $inputParameters service parameter, (service => the service call, service.method)
+	 * @param mixed the service result before encoding
+	 * @param ServiceMetadata $metaData
+	 *
+	 * can return value tranformed $result, encoder is call after this method
+	 */
+	public function after($method,array &$inputParameters, $result, ServiceMetadata $metaData) {
+		
+	}
+
+}
+
+ ```
+ 
+ And you can call your handler like this : 
+ 
+ *service.php*
+ ``` php
+    /**
+	 * @Secure
+	 *
+     * @param string $yourName
+     * @return string 
+     */
+    public function helloYou($userId) {
+        return 'hello ' .$userId.'!!!';
+    }
+ ```
+ 
