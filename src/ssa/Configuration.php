@@ -5,6 +5,7 @@ namespace ssa;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\PhpFileCache;
 use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\MemcacheCache;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
@@ -134,7 +135,7 @@ class Configuration {
                 $cacheDriver->setMemcache($memcache);
                 $this->cacheProvider = $cacheDriver;
             } else {
-                $this->cacheProvider = null;
+                $this->cacheProvider = new ArrayCache ;
             }
         }
         return $this->cacheProvider;
