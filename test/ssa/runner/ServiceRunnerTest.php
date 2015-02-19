@@ -156,6 +156,7 @@ class ServiceRunnerTest extends \PHPUnit_Framework_TestCase{
     public function testActionNotSupported() {
         $serviceRunner = new ServiceRunner('testServiceRunnerService1');
         $returnJson = $serviceRunner->runAction('service2', array());
+        
         $return = json_decode($returnJson);
         $this->assertEquals(3001, $return->errorCode);
     }
