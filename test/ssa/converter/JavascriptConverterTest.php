@@ -15,19 +15,14 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
     private $url = 'http://test.com/action/2';
     
     public function setUp() {
-        $this->urlFactory = $this->getMock(
-            'ssa\\converter\\UrlFactory',
-            array('constructUrl')
-        );
-        $this->urlFactory->expects($this->at(0))
-                         ->method('constructUrl')
-                         ->will($this->returnValue($this->url));
-        
+        $this->urlFactory = new SimpleUrlFactory('http://test.com/action/2');
+
         ServiceManager::getInstance()->registerService('testService', 'ssa\converter\ServiceTest');
+        ServiceManager::getInstance()->registerService('testExtendsService', 'ssa\converter\ExtendedServiceTest');
         ServiceManager::getInstance()->registerService(
             'testServiceAction2',
             'ssa\converter\ServiceTest',
-            array('action2')             
+            array('action2', 'action3')             
         );
     }
     
@@ -41,14 +36,48 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
         $javascript = $converter->convert();
         
         $this->assertTrue(
-            strpos($javascript, 'testService.action1 = function(param1, param2)') >= 0,
+            strpos($javascript, 'testService.action1 = function(param1, param2)')  !== FALSE,
             'la fonction action1 n\'est pas présente'
         ); 
         $this->assertTrue(
-            strpos($javascript, 'testService.action2 = function(param1)') >= 0,
+            strpos($javascript, 'testService.action2 = function(param1)')  !== FALSE,
             'la fonction action2 n\'est pas présente'
         ); 
-        $this->assertTrue(strpos($javascript, $this->url) >= 0);
+        
+        $this->assertTrue(
+                strpos($javascript, 'console.log(\'coucou\')') !== FALSE,
+                'l\'ajout du js ne fonctionne pas'
+        );
+        $this->assertTrue(strpos($javascript, $this->url) !== FALSE);
+        
+    }
+	
+    public function testJavascriptConverterEtendsWithoutMethods() {
+        $converter = new JavascriptConverter(
+            ServiceManager::getInstance()->getService('testExtendsService'),
+            $this->urlFactory
+        );
+        $converter->setDebug(false);
+        $javascript = $converter->convert();
+        
+        $this->assertTrue(
+            strpos($javascript, 'testExtendsService.action1 = function(param1, param2)')  !== FALSE,
+            'la fonction action1 n\'est pas présente'
+        ); 
+        $this->assertTrue(
+            strpos($javascript, 'testExtendsService.action2 = function(param1)') !== FALSE,
+            'la fonction action2 n\'est pas présente'
+        ); 
+        $this->assertTrue(
+                strpos($javascript, 'console.log(\'coucou\')') !== FALSE,
+                'l\'ajout du js ne fonctionne pas'
+        );
+        
+        $this->assertTrue(
+                strpos($javascript, 'console.log(\'coucou2\')') !== FALSE,
+                'l\'ajout du js ne fonctionne pas'
+        );
+        $this->assertTrue(strpos($javascript, $this->url) !== FALSE);
         
     }
     
@@ -58,20 +87,21 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
         $javascript = $converter->convert();
         
         $this->assertFalse(
-            strpos($javascript, 'testService.action1 = function(param1, param2)'),
+            strpos($javascript, 'testServiceAction2.action1 = function(param1, param2)'),
             'la fonction action1 ne devrait pas être présente'
         ); 
         $this->assertTrue(
-            strpos($javascript, 'testService.action2 = function(param1)') >= 0,
+            strpos($javascript, 'testServiceAction2.action2 = function(param1)') !== FALSE,
             'la fonction action2 n\'est pas présente'
         ); 
+                
         $this->assertTrue(
-            strpos($javascript, 'testService.action3 = function(service)') >= 0,
+            strpos($javascript, 'testServiceAction2.action3 = function(service)') !== FALSE,
             'la fonction action3 n\'as pas les bons paramétres'
         ); 
         
         $this->assertFalse(
-            strpos($javascript, 'testService.action3 = function(param1)'),
+            strpos($javascript, 'testServiceAction2.action3 = function(param1)'),
             'la fonction action3 n\'as pas les bons paramétres'
         ); 
         $this->assertTrue(strpos($javascript, $this->url) >= 0);
@@ -82,15 +112,15 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
         $converter->setDebug(true);
         $javascript = $converter->convert();
         
-        $this->assertTrue(
-            strpos($javascript, 'testService.action1 = function(param1, param2)') == 0,
+        $this->assertFalse(
+            strpos($javascript, 'testServiceAction2.action1 = function(param1, param2)'),
             'la fonction action1 ne devrait pas être présente'
         ); 
         $this->assertTrue(
-            strpos($javascript, 'testService.action2 = function(param1)') >= 0,
+            strpos($javascript, 'testServiceAction2.action2 = function(param1)')  !== FALSE,
             'la fonction action2 n\'est pas présente'
         ); 
-        $this->assertTrue(strpos($javascript, $this->url) >= 0);
+        $this->assertTrue(strpos($javascript, $this->url)  !== FALSE);
     }
 
     public function testJavascriptConverterWithoutMethodsDebug() {        
@@ -99,13 +129,13 @@ class JavascriptConverterTest extends \PHPUnit_Framework_TestCase  {
         $javascript = $converter->convert();
         
         $this->assertTrue(
-            strpos($javascript, 'testService.action1 = function(param1, param2)') >= 0,
+            strpos($javascript, 'testService.action1 = function(param1, param2)')  !== FALSE,
             'la fonction action1 n\'est pas présente'
         ); 
         $this->assertTrue(
-            strpos($javascript, 'testService.action2 = function(param1)') >= 0,
+            strpos($javascript, 'testService.action2 = function(param1)')  !== FALSE,
             'la fonction action2 n\'est pas présente'
         ); 
-        $this->assertTrue(strpos($javascript, $this->url) >= 0);
+        $this->assertTrue(strpos($javascript, $this->url)  !== FALSE);
     }
 }

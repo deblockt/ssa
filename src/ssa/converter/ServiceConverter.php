@@ -92,31 +92,37 @@ abstract class ServiceConverter {
     }
     
 	
-	/**
-	 * add perso Javascript file on generated service
-	 * if annotation AddJavascript is on the class definition
-	 * file specified on parameter is add on the generated file
-	 *
-	 * the file generated can define a module function, if you need add function on the module this function must be used
-	 * this function have one parameter the current generated module
-	 */
-	protected function addPersoJavascript($class, $serviceName) {
-		$annotationReader = $this->getAnnotationReader();        
-			
-		// read anotations and check if a runner handler is present
-		$classAnno = $annotationReader->getClassAnnotation($class, 'ssa\converter\annotations\AddJavascript');
-		
-		if ($classAnno != null) {
-			$completePath = $class->getFileName();
-			$dirPath = substr($completePath, 0, strrpos($completePath, DIRECTORY_SEPARATOR) + 1);
-			
-			return 
-				file_get_contents($dirPath.$classAnno->value) . "\n"
-				. 'if (module) {module('.$serviceName.')}'."\n";
-		}
-		
-		return '';
-	}
+    /**
+     * add perso Javascript file on generated service
+     * if annotation AddJavascript is on the class definition
+     * file specified on parameter is add on the generated file
+     *
+     * the file generated can define a module function, if you need add function on the module this function must be used
+     * this function have one parameter the current generated module
+     */
+    protected function addPersoJavascript(\ReflectionClass $class, $serviceName) {
+        $annotationReader = $this->getAnnotationReader();        
+
+        // read anotations and check if a runner handler is present
+        $classAnno = $annotationReader->getClassAnnotation($class, 'ssa\converter\annotations\AddJavascript');
+
+        $return = '';
+        if ($classAnno != null) {
+                $completePath = $class->getFileName();
+                $dirPath = substr($completePath, 0, strrpos($completePath, DIRECTORY_SEPARATOR) + 1);
+
+                $return .= '(function(){' .
+                        file_get_contents($dirPath.$classAnno->value) . "\n"
+                        . 'if (module) {module('.$serviceName.')}'."\n})();\n";
+        }
+
+        $parent = $class->getParentClass();
+        if ($parent != null) {
+                $return .= $this->addPersoJavascript($parent, $serviceName);
+        }
+
+        return $return;
+    }
 	
     /***
      * function call when the converter have convert all methods
@@ -134,6 +140,11 @@ abstract class ServiceConverter {
      * @param ReflectionMethod $method
      */
     private function createMethod(\ReflectionMethod $method) {
+        // don't export private or protected method
+        if ($method->isPrivate() || $method->isProtected()) {
+                return '';
+        }
+		
         $comment = $method->getDocComment();
         $params = AnnotationUtil::getMethodParameters($comment);
         // get params with reflexion methods

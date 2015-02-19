@@ -14,7 +14,6 @@ use ssa\ServiceManager;
 use ssa\Configuration;
 use Doctrine\Common\Annotations\CachedReader;
 use ssa\runner\BadTypeException;
-
 use ssa\runner\converter\annotations\Encoder;
 use ssa\runner\annotations\RunnerHandler;
 
@@ -22,18 +21,19 @@ use ssa\runner\annotations\RunnerHandler;
  * this class can call a service
  */
 class ServiceRunner {
+
     /**
      *
      * @var ServiceMetadata
      */
     private $metaData;
-    
+
     /**
      *
      * @var \ssa\runner\resolver\ParameterResolver
      */
     private $parameterResolver;
-    
+
     /**
      * 
      * @param string|ServiceMetadata $service service metadata
@@ -52,15 +52,15 @@ class ServiceRunner {
             $this->setParameterResolver($parameterResolver);
         }
     }
-    
+
     /**
      * set the parameter resolver
      * @param \ssa\runner\ParameterResolver $parameterResolver the new resolver
      */
     public function setParameterResolver(ParameterResolver $parameterResolver) {
-         $this->parameterResolver = $parameterResolver;    
+        $this->parameterResolver = $parameterResolver;
     }
-    
+
     /**
      * run the action without try catch for framework exception
      * @param type $smethod
@@ -73,30 +73,29 @@ class ServiceRunner {
      * @throws ClassNotFoundException
      */
     private function runActionWithoutTryCatch($smethod, $inputParameters = array()) {
-        if (count($this->metaData->getMethods()) > 0 
-            && 
-            !in_array($smethod, $this->metaData->getMethods())
-        ) {            
+        if (count($this->metaData->getMethods()) > 0 &&
+                !in_array($smethod, $this->metaData->getMethods())
+        ) {
             throw new ActionNotSupportedException($smethod);
         }
-        
+
         $method = $this->metaData->getClass()->getMethod($smethod);
         // lecture de l'annotation de la méthode
 
-        $annotationReader = $this->getAnnotationReader();        
-			
-				
-		// read anotations and check if a runner handler is present
-		$methodAnnos = $annotationReader->getMethodAnnotations($method);
-		
+        $annotationReader = $this->getAnnotationReader();
+
+
+        // read anotations and check if a runner handler is present
+        $methodAnnos = $annotationReader->getMethodAnnotations($method);
+
         foreach ($methodAnnos as $anno) {
-			// call before handler
-			if ($anno instanceof RunnerHandler && method_exists($anno, 'before')) {
-				$anno->before($smethod, $inputParameters, $this->metaData);
-			}
-		}
-		
-		
+            // call before handler
+            if ($anno instanceof RunnerHandler && method_exists($anno, 'before')) {
+                $anno->before($smethod, $inputParameters, $this->metaData);
+            }
+        }
+
+
         $docParameters = AnnotationUtil::getMethodParameters($method->getDocComment());
         $parameters = $method->getParameters();
         $parametersValue = array();
@@ -110,7 +109,7 @@ class ServiceRunner {
             try {
                 if (!$parameter->isDefaultValueAvailable() && !isset($inputParameters[$name])) {
                     throw new MissingParameterException($name);
-                } else if (isset($inputParameters[$name])){                    
+                } else if (isset($inputParameters[$name])) {
                     if (!isset($docParameters[$name]) || $docParameters[$name] == NULL) {
                         $docParameters[$name] = array();
                     }
@@ -132,31 +131,31 @@ class ServiceRunner {
             }
             $parametersValue[] = $currentValue;
         }
-        
-		
-		$service = $this->metaData->getInstance();
-        $result = $method->invokeArgs($service, $parametersValue);
-		
-		$encoder = null;        
-		foreach ($methodAnnos as $anno) {
-			if ($anno instanceof Encoder) {
-				if (!class_exists($anno->value)) {
-					throw new ClassNotFoundException($anno->value);
-				}
-				$encoder = new $anno->value();
-				break;
-			}
-			
-			// call after handler
-			if ($anno instanceof RunnerHandler && method_exists($anno, 'after')) {
-				$after = $anno->after($smethod, $inputParameters, $result, $this->metaData);
-				if ($after != null) {
-					$result = $after;
-				}
-			}
-		}
 
-		if ($encoder == null) {
+
+        $service = $this->metaData->getInstance();
+        $result = $method->invokeArgs($service, $parametersValue);
+
+        $encoder = null;
+        foreach ($methodAnnos as $anno) {
+            if ($anno instanceof Encoder) {
+                if (!class_exists($anno->value)) {
+                    throw new ClassNotFoundException($anno->value);
+                }
+                $encoder = new $anno->value();
+                break;
+            }
+
+            // call after handler
+            if ($anno instanceof RunnerHandler && method_exists($anno, 'after')) {
+                $after = $anno->after($smethod, $inputParameters, $result, $this->metaData);
+                if ($after != null) {
+                    $result = $after;
+                }
+            }
+        }
+
+        if ($encoder == null) {
             $encoder = new DefaultJsonEncoder();
         }
 
@@ -164,12 +163,12 @@ class ServiceRunner {
         $headers = $encoder->getHeaders();
         if (!headers_sent()) {
             foreach ($headers as $key => $value) {
-                header($key.': '.$value);
+                header($key . ': ' . $value);
             }
         }
         return $encodedResult;
     }
-    
+
     /**
      * run an action of the class
      * @param $method  the method name to run
@@ -180,8 +179,10 @@ class ServiceRunner {
         try {
             return $this->runActionWithoutTryCatch($method, $inputParameters);
         } catch (\Exception $ex) {
-            header('Content-type: text/json');
-			return json_encode(array(
+            if (!headers_sent()) {
+                header('Content-type: text/json');
+            }
+            return json_encode(array(
                 'class' => get_class($ex),
                 'errorCode' => $ex->getCode(),
                 'errorMessage' => $ex->getMessage(),
@@ -192,19 +193,18 @@ class ServiceRunner {
             ));
         }
     }
-    
+
     private function getAnnotationReader() {
         $configuration = Configuration::getInstance();
         $cacheMode = $configuration->getCacheMode();
         $defaultAnnotationReader = new AnnotationReader();
         if ($cacheMode == 'none') {
-            return $defaultAnnotationReader;            
+            return $defaultAnnotationReader;
         } else {
             return new CachedReader(
-                $defaultAnnotationReader,
-                $configuration->getCacheProvider(),
-                $configuration->getDebug()
-            );            
+                    $defaultAnnotationReader, $configuration->getCacheProvider(), $configuration->getDebug()
+            );
         }
     }
+
 }
