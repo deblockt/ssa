@@ -182,19 +182,19 @@ class ServiceRunner {
             if (!headers_sent()) {
                 header('Content-type: text/json');
             }
-			$debug = Configuration::getInstance()->getDebug();
+            $debug = Configuration::getInstance()->getDebug();
             $error = array(
                 'class' => get_class($ex),
                 'errorCode' => $ex->getCode(),
                 'errorMessage' => $ex->getMessage(),
-				'debug' => Configuration::getInstance()->getDebug()
-			);
-			if ($debug) {
+                'debug' => Configuration::getInstance()->getDebug()
+            );
+            if ($debug) {
                 $error['errorFile'] = $ex->getFile();
                 $error['errorLine'] = $ex->getLine();
                 $error['errorTrace'] = $ex->getTraceAsString();
-            )
-			return json_encode($error);
+            }
+            return json_encode($error);
         }
     }
 
