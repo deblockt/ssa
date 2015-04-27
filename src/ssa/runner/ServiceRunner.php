@@ -139,10 +139,14 @@ class ServiceRunner {
         $encoder = null;
         foreach ($methodAnnos as $anno) {
             if ($anno instanceof Encoder) {
+                if ($anno->value == null) {
+                    $anno->value = '\\ssa\\runner\\converter\\DefaultJsonEncoder';
+                }
+                
                 if (!class_exists($anno->value)) {
                     throw new ClassNotFoundException($anno->value);
                 }
-                $encoder = new $anno->value();
+                $encoder = new $anno->value($anno);
                 break;
             }
 

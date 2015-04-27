@@ -68,6 +68,19 @@ class ServiceRunnerTest extends \PHPUnit_Framework_TestCase{
         return $param1;
     }
     
+    /**
+     * @Encoder(excludePath = {"param"})
+     */
+    public function service5() {
+        $pojo = new Pojo();
+        $pojo->setParam("test");
+        $subPojo = new Pojo();
+        $subPojo->setParam("test2");
+        $subPojo->setPojo($pojo);
+        $pojo->setPojo($subPojo);
+        return $pojo;
+    }
+    
     
     public function setUp() {
         ServiceManager::getInstance()->registerService('testServiceRunner', 'ssa\runner\ServiceRunnerTest');
@@ -90,6 +103,11 @@ class ServiceRunnerTest extends \PHPUnit_Framework_TestCase{
             'testServiceRunnerService4',
             'ssa\runner\ServiceRunnerTest',
             array('service4')
+        );
+        ServiceManager::getInstance()->registerService(
+            'testServiceRunnerService5',
+            'ssa\runner\ServiceRunnerTest',
+            array('service5')
         );
     }
     
@@ -151,7 +169,13 @@ class ServiceRunnerTest extends \PHPUnit_Framework_TestCase{
         $this->assertEquals('test', $return2[0]);
         $this->assertEquals('testtest', $return2[1]);
     }
-    
+
+    public function testExecuteActionExcludePathEncoder() {
+        $serviceRunner = new ServiceRunner('testServiceRunnerService5');
+        $returnJson = $serviceRunner->runAction('service5', array());
+        
+        $this->assertEquals('{"pojo":{"param":"test2","pojo":"cyclical_dependencies"}}', $returnJson);
+    }
     
     public function testActionNotSupported() {
         $serviceRunner = new ServiceRunner('testServiceRunnerService1');
