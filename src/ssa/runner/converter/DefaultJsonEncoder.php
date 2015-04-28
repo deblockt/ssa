@@ -70,24 +70,26 @@ class DefaultJsonEncoder implements \JsonSerializable, Encoder {
      * 
      * @param \ssa\runner\converter\Traversable $data
      * @return \ssa\runner\converter\Traversable
+     * 
+     * 
      */
-    private function serialize($data, $path = null) {
+    private function serialize($data, $path = null, $alreadySerialized = array()) {
         // TODO gérer les cycles, ajouter un paramétre permettre de ne pas exporter certains champs
         $return = null;
         if(is_array($data) ||  $data instanceof Traversable ) {
             $return = array();
             foreach ($data as $key => $value) {
-                $newPath = $path . (($path == null) ? '' : '.') . $key;
+                $newPath = $path . (($path == null) ? '' : '.') . (is_int($key) ? '' : $key);
                 if ($this->canBeAdded($newPath)) {
-                    $return[$key] = $this->serialize($value, $newPath);
+                    $return[$key] = $this->serialize($value, $newPath, $alreadySerialized);
                 }
             }
         } else if (is_object ($data)) {
-            if (in_array($data, $this->alreadySerialized)) {
+            if (in_array($data, $alreadySerialized)) {
                 return "cyclical_dependencies";
             }
             
-            $this->alreadySerialized[] = $data;
+            $alreadySerialized[] = $data;
             
             // récupération des getter de la classe
             // TODO mettre les méthodes en cache par rapport aux classes
@@ -99,7 +101,7 @@ class DefaultJsonEncoder implements \JsonSerializable, Encoder {
                     $property = lcfirst(mb_substr($method->getName(), 3,mb_strlen($method->getName(),'UTF-8'),'UTF-8'));
                     $newPath = $path . (($path == null) ? '' : '.') . $property;
                     if ($this->canBeAdded($newPath)) {
-                        $return[$property] = $this->serialize($method->invoke($data), $newPath);
+                        $return[$property] = $this->serialize($method->invoke($data), $newPath, $alreadySerialized);
                     }
                 }
             }

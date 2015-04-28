@@ -107,6 +107,23 @@ class DefaultJsonEncoderTest extends \PHPUnit_Framework_TestCase {
             'Content-type' => 'application/json'
         ), $this->encoder->getHeaders());
     }
+    
+    public function testObjectEncoderWithArrayObject() {        
+        $encoderAnno = new annotations\Encoder();
+        $encoderAnno->value = 'ssa\runner\converter\DefaultJsonEncoderTest';
+        $encoderAnno->excludePath = array('param3');
+        $this->encoder = new DefaultJsonEncoder($encoderAnno);
+        
+        $pojo = new Pojo();
+        $pojo->setParam1("test");
+        $array = array($pojo, $pojo);
+        
+        $result = $this->encoder->encode($array);
+        $this->assertEquals('[{"param1":"test"},{"param1":"test"}]', $result);
+        $this->assertEquals(array(
+            'Content-type' => 'application/json'
+        ), $this->encoder->getHeaders());
+    }
  }
 
 class Pojo {
