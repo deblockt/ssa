@@ -76,7 +76,7 @@ class DefaultJsonEncoder implements \JsonSerializable, Encoder {
     private function serialize($data, $path = null, $alreadySerialized = array()) {
         // TODO gérer les cycles, ajouter un paramétre permettre de ne pas exporter certains champs
         $return = null;
-        if(is_array($data) ||  $data instanceof Traversable ) {
+        if(is_array($data) ||  $data instanceof \Traversable ) {
             $return = array();
             foreach ($data as $key => $value) {
                 $newPath = $path . (($path == null) ? '' : '.') . (is_int($key) ? '' : $key);
