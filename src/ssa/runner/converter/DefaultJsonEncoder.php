@@ -79,7 +79,7 @@ class DefaultJsonEncoder implements \JsonSerializable, Encoder {
         if(is_array($data) ||  $data instanceof \Traversable ) {
             $return = array();
             foreach ($data as $key => $value) {
-                $newPath = $path . (($path == null) ? '' : '.') . (is_int($key) ? '' : $key);
+                $newPath = is_int($key) ? $path : (($path == null) ? null : $path . '.' . $key);
                 if ($this->canBeAdded($newPath)) {
                     $return[$key] = $this->serialize($value, $newPath, $alreadySerialized);
                 }
