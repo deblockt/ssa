@@ -24,8 +24,8 @@ class DefaultPrimitiveResolver extends PrimitiveResolverCOR {
      */
     protected function resolve($value, array &$type) {
         try {
-			if (isset($type[0])) {
-				\settype($value, $type[0]);
+			if (isset($type[0])) {				
+				\settype($value, trim($type[0], '\\'));
 			}
         } catch (\Exception $e) {
             // le type demandé n'existe pas 
