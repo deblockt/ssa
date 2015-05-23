@@ -13,6 +13,15 @@ and open the template in the editor.
         <script type="text/javascript" src="javascript.php?service=helloWorldService"></script>
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
         <script type="text/javascript">
+		
+			ssa.addStartCallListener(function(host) {
+				console.log('start', host);
+			});
+			
+			ssa.addEndCallListener(function(host) {
+				console.log('end', host);
+			});
+			
             helloWorldService.helloYou('deblockt').done(function(data) {
                 document.getElementById('helloYou').innerHTML = data;
             });

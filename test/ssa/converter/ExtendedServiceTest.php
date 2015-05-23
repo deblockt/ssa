@@ -7,10 +7,10 @@ use ssa\converter\annotations\AddJavascript;
 /**
  * Service utilisé dans le test des converteurs
  * 
- * @AddJavascript("addJsTest.js") 
+ * @AddJavascript("addJsTest2.js") 
  * @author thomas
  */
-class ServiceTest {
+class ExtendedServiceTest extends ServiceTest {
     
     /**
      * action1 documentation

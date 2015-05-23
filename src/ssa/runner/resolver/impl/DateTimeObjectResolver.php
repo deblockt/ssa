@@ -33,7 +33,7 @@ class DateTimeObjectResolver extends ObjectResolverCOR {
         $return =  \DateTime::createFromFormat($format, $parameters);
         if ($return === false) {
             // TODO faire une exception avec un message d'erreur correcte
-            throw new TypeNotSupportedException($commentType[0], $format);
+            throw new TypeNotSupportedException(isset($commentType[0]) ? $commentType[0] : $class->getName(), $format);
         }
         return $return;
     }

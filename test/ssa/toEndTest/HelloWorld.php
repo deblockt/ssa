@@ -4,6 +4,7 @@ namespace ssa\toEndTest;
 
 use ssa\runner\resolver\Pojo;
 use ssa\runner\converter\annotations\Encoder;
+use ssa\runner\annotations\RunnerHandler;
 
 /**
  * Description of HelloWorld
@@ -13,7 +14,7 @@ use ssa\runner\converter\annotations\Encoder;
 class HelloWorld {
     
     /**
-     * 
+     * @RunnerHandler
      * @param string $yourName
      * @return string 
      */
@@ -22,7 +23,7 @@ class HelloWorld {
     }
     
     /**
-     * @Encoder("\ssa\runner\converter\FileDownloadEncoder")
+     * @Encoder("\ssa\runner\converter\FileEncoder")
      * 
      * @param file $file1 the file
      */

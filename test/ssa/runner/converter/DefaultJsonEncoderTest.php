@@ -71,7 +71,60 @@ class DefaultJsonEncoderTest extends \PHPUnit_Framework_TestCase {
             'Content-type' => 'application/json'
         ), $this->encoder->getHeaders());
     }
-}
+
+    public function testObjectEncoderWithExcludePath() {
+        $encoderAnno = new annotations\Encoder();
+        $encoderAnno->value = 'ssa\runner\converter\DefaultJsonEncoderTest';
+        $encoderAnno->excludePath = array('param3.param1', 'param1');
+        $this->encoder = new DefaultJsonEncoder($encoderAnno);
+        
+        $pojo = new Pojo();
+        $subPojo = new Pojo();
+        $subPojo->setParam1('sub-value');
+        $pojo->setParam1('value1');
+        $pojo->setParam2(154);
+        $pojo->setParam3($subPojo);
+        
+        $result = $this->encoder->encode($pojo);
+        $this->assertEquals('{"param3":{"param3":null}}', $result);
+        $this->assertEquals(array(
+            'Content-type' => 'application/json'
+        ), $this->encoder->getHeaders());
+    }
+ 
+    public function testObjectEncoderWithCyclicalDependencies() {        
+        $pojo = new Pojo();
+        $subPojo = new Pojo();
+        $subPojo->setParam1('sub-value');
+        $subPojo->setParam3($pojo);
+        $pojo->setParam1('value1');
+        $pojo->setParam2(154);
+        $pojo->setParam3($subPojo);
+        
+        $result = $this->encoder->encode($pojo);
+        $this->assertEquals('{"param1":"value1","param3":{"param1":"sub-value","param3":"cyclical_dependencies"}}', $result);
+        $this->assertEquals(array(
+            'Content-type' => 'application/json'
+        ), $this->encoder->getHeaders());
+    }
+    
+    public function testObjectEncoderWithArrayObject() {        
+        $encoderAnno = new annotations\Encoder();
+        $encoderAnno->value = 'ssa\runner\converter\DefaultJsonEncoderTest';
+        $encoderAnno->excludePath = array('param3');
+        $this->encoder = new DefaultJsonEncoder($encoderAnno);
+        
+        $pojo = new Pojo();
+        $pojo->setParam1("test");
+        $array = array($pojo, $pojo);
+        
+        $result = $this->encoder->encode($array);
+        $this->assertEquals('[{"param1":"test"},{"param1":"test"}]', $result);
+        $this->assertEquals(array(
+            'Content-type' => 'application/json'
+        ), $this->encoder->getHeaders());
+    }
+ }
 
 class Pojo {
     private $param1;

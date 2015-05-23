@@ -4,6 +4,8 @@
 var ssa = {
     rbracket : /\[\]$/,
     r20 : /%20/g,
+	startCallListener : [],
+	endCallListener : [],
     supportFileUpload : function(){
         if ('undefined' !== typeof window.FormData) {
             fd = new FormData;
@@ -27,7 +29,8 @@ var ssa = {
         });  
     },
     ajaxRequest: function(ops) {
-        if(typeof ops === 'string') ops = { url: ops };
+        var _thisSsa = this;
+		if(typeof ops === 'string') ops = { url: ops };
         ops.url = ops.url || '';
         ops.method = ops.method || 'get';
         ops.useFormData = ops.useFormData || false;
@@ -53,6 +56,9 @@ var ssa = {
             return {'baseUrl' : baseUrl, 'parameters' : query_string};
         };
         
+		/**
+		 * return the string params
+		 */
         var getParams = function(data, url) {
             if (ops.useFormData) {
                 var formData = new FormData();
@@ -80,7 +86,9 @@ var ssa = {
         }
         
         var api = {
-            host: {},
+            host: {	
+				ops : ops
+			},
             process: function(ops) {
                 var self = this;
                 this.xhr = null;
@@ -88,7 +96,9 @@ var ssa = {
                 else if(window.XMLHttpRequest) { this.xhr = new XMLHttpRequest(); }
                 if(this.xhr) {
                     this.xhr.onreadystatechange = function() {
-                        if(self.xhr.readyState === 4 && self.xhr.status === 200) {
+                        if(self.xhr.readyState === 4 && self.xhr.status === 200) {							
+							self.alwaysCallback && self.alwaysCallback.apply(self.host, [self.xhr]);
+							
                             var result = self.xhr.responseText;
                             var contentType = this.getResponseHeader('content-type');
                             if (contentType.indexOf('text/json') >= 0 || contentType.indexOf('application/json') >= 0) {
@@ -98,18 +108,34 @@ var ssa = {
                                     result = eval('(' + result + ')');
                                 }
                             }
-                            self.successCall(result);
+							// call listeners endCall
+							var callSuccessHandler = _thisSsa.endCall(self.host, result);
+							
+							if (callSuccessHandler) {
+								self.successCall(result);
+							}
                         } else if(self.xhr.readyState === 4) {
-                            if (self.failCallback) {
-                                self.failCallback.apply(self.host, [self.xhr]);
-                            } else if (ssa.defaultFailHandler) {
-                                ssa.defaultFailHandler.apply(self.host, [self.xhr]);
-                            }
+							self.alwaysCallback && self.alwaysCallback.apply(self.host, [self.xhr]);
+							
+							// call listeners endCall
+							var callNextCallback = _thisSsa.endCall(self.host);
+							
+							if (callNextCallback) {
+								if (self.failCallback) {
+									self.failCallback.apply(self.host, [self.xhr]);
+								} else if (ssa.defaultFailHandler) {
+									ssa.defaultFailHandler.apply(self.host, [self.xhr]);
+								}
+							}
                         }
-                        self.alwaysCallback && self.alwaysCallback.apply(self.host, [self.xhr]);
+                        
                     };
                 }
                 
+				
+				// call listeners startCall
+				_thisSsa.startCall(this.host, ops.data);
+				
                 if(ops.method === 'get') {
                     this.xhr.open("GET", ops.url + getParams(ops.data, ops.url), !ops.synchronous);
                 } else {
@@ -158,7 +184,7 @@ var ssa = {
                 return this;
             },
             successCall : function(data){
-                if (data.errorCode) {
+                if (data.errorCode !== undefined) {
                     if (this.phpErrorCallback) {
                         this.phpErrorCallback.apply(this.host, [data, this.xhr]);
                     } else if (ssa.defaultPhpErrorHandler) {
@@ -183,6 +209,9 @@ var ssa = {
         
         return api.process(ops);
     },
+	/**
+	 * convert object param on HTML parameters
+	 */
     buildParams : function( prefix, obj, add ) {        
         if (obj instanceof FileList) {
             for (var i = 0; i < obj.length; i++) { 
@@ -207,15 +236,15 @@ var ssa = {
         }
     },    
     param : function(a) {
-	var s = this.paramAsArray(a);
-        var sString = [];
-        for (var i in s) {
-            s[i][0] = encodeURIComponent(s[i][0]);
-            s[i][1] = encodeURIComponent(s[i][1]);
-            sString.push(s[i].join("="));
-        }
-	// Return the resulting serialization
-	return sString.join( "&" ).replace(ssa.r20, "+" );
+		var s = this.paramAsArray(a);
+		var sString = [];
+		for (var i in s) {
+			s[i][0] = encodeURIComponent(s[i][0]);
+			s[i][1] = encodeURIComponent(s[i][1]);
+			sString.push(s[i].join("="));
+		}
+		// Return the resulting serialization
+		return sString.join( "&" ).replace(ssa.r20, "+" );
     },
     paramAsArray : function(a) {
         var prefix;
@@ -230,21 +259,21 @@ var ssa = {
             };
 
 
-	// If an array was passed in, assume that it is an array of form elements.
-	if (a instanceof FileList) {
-            for (var i = 0; i < files.length; i++) { 
-                add( i, a[i]);
-            }
-        } else if (Array.isArray( a )) {
-            for (var i in a) {
-                add( i, a[i]);
-            }
-	} else {
-            // recurcive parse 
-            for (var prefix in a ) {
-                ssa.buildParams( prefix, a[ prefix ], add );
-            }
-	}
+		// If an array was passed in, assume that it is an array of form elements.
+		if (a instanceof FileList) {
+				for (var i = 0; i < files.length; i++) { 
+					add( i, a[i]);
+				}
+			} else if (Array.isArray( a )) {
+				for (var i in a) {
+					add( i, a[i]);
+				}
+		} else {
+				// recurcive parse 
+				for (var prefix in a ) {
+					ssa.buildParams( prefix, a[ prefix ], add );
+				}
+		}
         
         return s;
     },
@@ -252,7 +281,7 @@ var ssa = {
         
     },
     defaultPhpErrorHandler : function(data) {
-        if (data.errorCode) {
+        if (data.errorCode !== undefined) {
             if (data.debug === true) {
                 if (console && console.error) {
                     console.error(data.errorMessage, data);
@@ -261,7 +290,41 @@ var ssa = {
                 }
             }
         }
-    }
+    },
+	/**
+	 * function to call all startCallListener
+	 * @param ssaActionCaller the action caller 
+	 */
+	startCall : function(ssaActionHostCaller, data){
+		for (var i in this.startCallListener) {
+			this.startCallListener[i].apply(ssaActionHostCaller, [data]);
+		}
+	},
+	/**
+	 * add a listener. Listener is call when a new request is do
+	 */
+	addStartCallListener : function(listener){
+		this.startCallListener.push(listener);		
+	},
+	/**
+	 * function call all EndCallListener
+	 */
+	endCall : function(ssaActionHostCaller, result) {
+		var callNextHandler = true;
+		for (var i in this.endCallListener) {			
+			var res = this.endCallListener[i].apply(ssaActionHostCaller, [result]);
+			if (res === false) {
+				callNextHandler = false;
+			}
+		}
+		return  callNextHandler;
+	},
+	/**
+	 * add a listener. Listener is call when a request is finish
+	 */
+	addEndCallListener : function(listener) {
+		this.endCallListener.push(listener);
+	}
 };
 
 // Add angular js support

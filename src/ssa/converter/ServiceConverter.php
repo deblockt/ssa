@@ -7,6 +7,11 @@ use ssa\annotation\AnnotationUtil;
 use ssa\ServiceManager;
 use ssa\Configuration;
 
+use ssa\converter\annotations\AddJavascript;
+
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\CachedReader;
+
 /**
  * Class for convert service PHP to Other thing
  * It's an abstract class, extends for add an support language
@@ -58,6 +63,10 @@ abstract class ServiceConverter {
         }
         
         $return = $this->convertClass($this->getServiceName());
+		
+		// add perso javascript content
+		$return .= $this->addPersoJavascript($this->metaData->getClass(), $this->getServiceName());
+		
         if (count($this->metaData->getMethods()) > 0) {
             foreach ($this->metaData->getMethods() as $methodName) {
                 $method = $this->metaData->getClass()->getMethod($methodName);
@@ -82,6 +91,39 @@ abstract class ServiceConverter {
         return $return;
     }
     
+	
+    /**
+     * add perso Javascript file on generated service
+     * if annotation AddJavascript is on the class definition
+     * file specified on parameter is add on the generated file
+     *
+     * the file generated can define a module function, if you need add function on the module this function must be used
+     * this function have one parameter the current generated module
+     */
+    protected function addPersoJavascript(\ReflectionClass $class, $serviceName) {
+        $annotationReader = $this->getAnnotationReader();        
+
+        // read anotations and check if a runner handler is present
+        $classAnno = $annotationReader->getClassAnnotation($class, 'ssa\converter\annotations\AddJavascript');
+
+        $return = '';
+        if ($classAnno != null) {
+                $completePath = $class->getFileName();
+                $dirPath = substr($completePath, 0, strrpos($completePath, DIRECTORY_SEPARATOR) + 1);
+
+                $return .= '(function(){' .
+                        file_get_contents($dirPath.$classAnno->value) . "\n"
+                        . 'if (module) {module('.$serviceName.')}'."\n})();\n";
+        }
+
+        $parent = $class->getParentClass();
+        if ($parent != null) {
+                $return .= $this->addPersoJavascript($parent, $serviceName);
+        }
+
+        return $return;
+    }
+	
     /***
      * function call when the converter have convert all methods
      * 
@@ -98,6 +140,11 @@ abstract class ServiceConverter {
      * @param ReflectionMethod $method
      */
     private function createMethod(\ReflectionMethod $method) {
+        // don't export private or protected method
+        if ($method->isPrivate() || $method->isProtected()) {
+                return '';
+        }
+		
         $comment = $method->getDocComment();
         $params = AnnotationUtil::getMethodParameters($comment);
         // get params with reflexion methods
@@ -126,7 +173,7 @@ abstract class ServiceConverter {
     protected abstract function convertMethod($methodName, $params, $comment);
     
     /**
-     * call when class ant be converted
+     * call when class must be converted
      * 
      * @param string the className
      */
@@ -146,4 +193,21 @@ abstract class ServiceConverter {
     protected function constructUrl($action) {
         return $this->urlFactory->constructUrl($action);
     }
+	
+	
+	private function getAnnotationReader() {
+        $configuration = Configuration::getInstance();
+        $cacheMode = $configuration->getCacheMode();
+        $defaultAnnotationReader = new AnnotationReader();
+        if ($cacheMode == 'none') {
+            return $defaultAnnotationReader;            
+        } else {
+            return new CachedReader(
+                $defaultAnnotationReader,
+                $configuration->getCacheProvider(),
+                $configuration->getDebug()
+            );            
+        }
+    }
+	
 }
