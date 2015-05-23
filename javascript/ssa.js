@@ -102,12 +102,23 @@ var ssa = {
                             var result = self.xhr.responseText;
                             var contentType = this.getResponseHeader('content-type');
                             if (contentType.indexOf('text/json') >= 0 || contentType.indexOf('application/json') >= 0) {
-                                if(typeof JSON !== 'undefined') {
-                                    result = JSON.parse(result);
-                                } else {
-                                    result = eval('(' + result + ')');
-                                }
-                            }
+                                try {
+									if(typeof JSON !== 'undefined') {
+										result = JSON.parse(result);
+									} else {
+										result = eval('(' + result + ')');
+									}
+								} catch (e) {
+									// error while parsing json (maybe xml <==> php error)
+									result = {
+										uncaughtException : true,
+										xmlContent : self.xhr.responseXML || self.xhr.responseText
+									};						
+								}
+                            } else if (contentType.indexOf('text/xml') >= 0 || contentType.indexOf('application/xml') >= 0) {
+								result = self.xhr.responseXML || self.xhr.responseText;
+							}
+							
 							// call listeners endCall
 							var callSuccessHandler = _thisSsa.endCall(self.host, result);
 							
@@ -184,7 +195,7 @@ var ssa = {
                 return this;
             },
             successCall : function(data){
-                if (data.errorCode !== undefined) {
+                if (data.errorCode !== undefined || data.uncaughtException !== undefined) {
                     if (this.phpErrorCallback) {
                         this.phpErrorCallback.apply(this.host, [data, this.xhr]);
                     } else if (ssa.defaultPhpErrorHandler) {
@@ -289,7 +300,13 @@ var ssa = {
                     alert(data.errorCode + '\n' + data.errorMessage);
                 }
             }
-        }
+        } else if (data.uncaughtException !== undefined) {			
+			if (console && console.error) {
+				console.error(data.xmlContent);
+			} else {
+				alert("An unexpected error occured.");
+			}
+		}
     },
 	/**
 	 * function to call all startCallListener
