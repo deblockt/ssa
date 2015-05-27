@@ -195,7 +195,7 @@ var ssa = {
                 return this;
             },
             successCall : function(data){
-                if (data.errorCode !== undefined || data.uncaughtException !== undefined) {
+                if (data && (data.errorCode !== undefined || data.uncaughtException !== undefined)) {
                     if (this.phpErrorCallback) {
                         this.phpErrorCallback.apply(this.host, [data, this.xhr]);
                     } else if (ssa.defaultPhpErrorHandler) {
@@ -292,7 +292,7 @@ var ssa = {
         
     },
     defaultPhpErrorHandler : function(data) {
-        if (data.errorCode !== undefined) {
+        if (data && data.errorCode !== undefined) {
             if (data.debug === true) {
                 if (console && console.error) {
                     console.error(data.errorMessage, data);
@@ -300,7 +300,7 @@ var ssa = {
                     alert(data.errorCode + '\n' + data.errorMessage);
                 }
             }
-        } else if (data.uncaughtException !== undefined) {			
+        } else if (data && data.uncaughtException !== undefined) {			
 			if (console && console.error) {
 				console.error(data.xmlContent);
 			} else {
