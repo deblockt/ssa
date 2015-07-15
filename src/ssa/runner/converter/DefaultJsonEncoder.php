@@ -97,13 +97,20 @@ class DefaultJsonEncoder implements \JsonSerializable, Encoder {
             $reflectionClass = new \ReflectionClass($data);
             
             foreach ($reflectionClass->getMethods() as $method) {
-                if(stripos($method->getName(), 'get') === 0 && count($method->getParameters()) == 0){
-                    $property = lcfirst(mb_substr($method->getName(), 3,mb_strlen($method->getName(),'UTF-8'),'UTF-8'));
+                if (count($method->getParameters()) == 0) {
+                    if (stripos($method->getName(), 'get') === 0) {
+                        $property = lcfirst(mb_substr($method->getName(), 3,mb_strlen($method->getName(),'UTF-8'),'UTF-8'));
+                    } else if (stripos($method->getName(), 'is') === 0){
+                        $property = lcfirst(mb_substr($method->getName(), 2,mb_strlen($method->getName(),'UTF-8'),'UTF-8'));
+                    } else {
+                        continue;
+                    }
+
                     $newPath = $path . (($path == null) ? '' : '.') . $property;
                     if ($this->canBeAdded($newPath)) {
                         $return[$property] = $this->serialize($method->invoke($data), $newPath, $alreadySerialized);
-                    }
-                }
+                    }                    
+                }                
             }
         } else if (is_string($data)) {
             if ('UTF-8' != mb_detect_encoding($data)) {

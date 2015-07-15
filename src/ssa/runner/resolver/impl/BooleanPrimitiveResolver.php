@@ -10,28 +10,20 @@ use ssa\runner\resolver\TypeNotSupportedException;
  *
  * @author thomas
  */
-class DefaultPrimitiveResolver extends PrimitiveResolverCOR {
+class BooleanPrimitiveResolver extends PrimitiveResolverCOR {
     
     /**
      * {@inheritdoc}
      */
     protected function canResolve(array &$type) {
-        return true;
+        return isset($type[0]) && ($type[0] == 'bool' || $type[0] == 'boolean');
     }
 
     /**
      * {@inheritdoc}
      */
     protected function resolve($value, array &$type) {
-        try {
-            if (isset($type[0])) {				
-                    \settype($value, trim($type[0], '\\'));
-            }
-        } catch (\Exception $e) {
-            // le type demandé n'existe pas 
-            throw new TypeNotSupportedException($type[0]);
-        }
-        return $value;
+        return $value == 'true';
     }
 
 }

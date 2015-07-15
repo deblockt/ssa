@@ -48,9 +48,11 @@ class DefaultParameterResolver implements ParameterResolver {
         if (DefaultParameterResolver::$defaultParameterResolver == null) {
             $return = new DefaultParameterResolver();
             $return->addPrimitiveResolver(new DefaultPrimitiveResolver());
+            $return->addPrimitiveResolver(new BooleanPrimitiveResolver());
             $return->addPrimitiveResolver(new ArrayPrimitiveResolver());
             $return->addPrimitiveResolver(new FilePrimitiveResolver());
             $return->addPrimitiveResolver(new ArrayFilePrimitiveResolver());
+            
             
             $return->addObjectResolver(new DefaultObjectResolver());
             $return->addObjectResolver(new DateTimeObjectResolver());
