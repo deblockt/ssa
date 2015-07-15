@@ -23,7 +23,7 @@ class BooleanPrimitiveResolver extends PrimitiveResolverCOR {
      * {@inheritdoc}
      */
     protected function resolve($value, array &$type) {
-        return $value == 'true';
+        return $value == 'true' || $value == true;
     }
 
 }
