@@ -84,7 +84,7 @@ _serviceTest.js_
 myService.myAction('firstParameter', {attr1 : 'value1'})
          .done(function(returnValue, xhr) { alert(returnValue);})
          .fail(function(xhr) {alter('a network error occurs');})
-         .phpError(function(errorPhp, xhr) {alter('an error occurs'.errorPhp.message);})
+         .phpError(function(errorPhp, xhr) {alert('an error occurs'.errorPhp.message);})
          .always(function(xhr){console.log('fin de la requête')}); 
 ```
 each callback have the same object context, you can pass variable between this callbacks.
